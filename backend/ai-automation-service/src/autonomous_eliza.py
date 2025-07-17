@@ -19,6 +19,8 @@ from web3 import Web3
 import requests
 from dotenv import load_dotenv
 
+from .eliza_memory_integration import XMRTElizaMemoryManager, MemoryContext # Import the memory manager
+
 load_dotenv()
 
 class AgentCapability(Enum):
@@ -105,15 +107,22 @@ class AutonomousElizaOS:
         self.last_health_check = datetime.now()
         
         self.logger.info("🤖 Autonomous ElizaOS System Initialized")
+
+        # Initialize XMRTElizaMemoryManager
+        self.memory_manager = XMRTElizaMemoryManager(config={
+            "vector_store_path": "data/vector_store", # This path should be relative to the service root
+            "max_memory_items": 10000,
+            "memory_retention_days": 365,
+        })
     
     def setup_logging(self):
         """Setup comprehensive logging for autonomous operations"""
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
             handlers=[
-                logging.FileHandler('autonomous_eliza.log'),
-                logging.FileHandler('dao_decisions.log'),
+                logging.FileHandler("autonomous_eliza.log"),
+                logging.FileHandler("dao_decisions.log"),
                 logging.StreamHandler()
             ]
         )
@@ -393,18 +402,30 @@ class AutonomousElizaOS:
     # Placeholder methods for AI operations (would be implemented with actual AI calls)
     async def analyze_proposal_with_ai(self, proposal) -> Dict[str, Any]:
         """AI analysis of governance proposals"""
+        # Use memory manager to store and retrieve relevant information for analysis
+        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
         return {"confidence": 0.85, "recommendation": "approve", "risk": "low"}
     
     async def ai_treasury_optimization(self, treasury_status) -> Dict[str, Any]:
         """AI-powered treasury optimization"""
+        # Use memory manager to store and retrieve relevant information for optimization
+        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
         return {"action_required": False, "confidence": 0.9}
     
     async def generate_ai_response(self, message) -> str:
         """Generate AI response to community messages"""
-        return "Thank you for your message. The DAO is operating normally."
+        # Use memory manager to generate contextual response
+        response_data = await self.memory_manager.generate_contextual_response(
+            user_input=message.get("content", ""),
+            user_id=message.get("author_id", "unknown_user"),
+            session_id=message.get("channel_id", "unknown_session"),
+        )
+        return response_data.get("response", "")
     
     async def ai_generate_insights(self, analytics) -> Dict[str, Any]:
         """Generate AI insights from analytics"""
+        # Use memory manager to store and retrieve relevant information for insights
+        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
         return {"actionable_recommendations": []}
     
     # Placeholder methods for blockchain/external integrations
@@ -418,7 +439,16 @@ class AutonomousElizaOS:
     
     async def monitor_community_channels(self) -> Dict[str, Any]:
         """Monitor community channels for messages"""
-        return {"messages": []}
+        # Simulate receiving a message that requires a response
+        # In a real scenario, this would come from a message queue or API
+        return {"messages": [{
+            "id": "msg123",
+            "author": "CommunityMember",
+            "author_id": "user_community_1",
+            "channel_id": "discord_general",
+            "content": "Hey Eliza, what's the latest on the XMRT tokenomics?",
+            "requires_response": True
+        }]}
     
     async def security_threat_scan(self) -> Dict[str, Any]:
         """Scan for security threats"""
@@ -446,4 +476,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
 
