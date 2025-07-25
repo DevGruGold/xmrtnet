@@ -1,58 +1,46 @@
 import streamlit as st
-import google.generativeai as genai
+import requests
 
 st.set_page_config(page_title="XMRT Onboarding", layout="centered")
-st.title("ðŸš€ XMRT DAO Onboarding")
+st.title("XMRT DAO Onboarding")
 st.subheader("The Token That Mines When the Internet Dies")
 
-# Configure Gemini
-genai.configure(api_key="AIzaSyAS9tG4JzVnCfaoiYJzSOIhacB0lB3dVsg")
-eliza = genai.GenerativeModel("gemini-pro").start_chat()
+st.markdown("Welcome! Let Eliza guide you through setting up your XMRT miner rig.")
 
-# Input: user alias
-alias = st.text_input("Whatâ€™s your alias, miner?")
+alias = st.text_input("What's your alias, miner?")
 
 if alias:
-    st.markdown("### ðŸ¤– Eliza says:")
-    welcome = eliza.send_message(f"My name is {alias}. Help me get started with XMRT.")
-    st.info(welcome.text)
-
-    # Embed that alias into vector space
+    st.markdown("### Eliza says:")
     try:
-        embedding = genai.embed_content(
-            model="models/embedding-001",
-            content=f"{alias} joined XMRT onboarding and created a rig.",
-            task_type="RETRIEVAL_DOCUMENT"
-        )
-        st.success("âœ… Identity embedded successfully!")
-        st.caption(f"Vector preview: {embedding['embedding'][:5]}...")
+        response = requests.post("https://xmrteliza.vercel.app/api/eliza", json={"prompt": f"My name is {alias}. Help me get started."})
+        if response.status_code == 200:
+            st.success(response.json()["output"])
+        else:
+            st.error("Eliza couldn't respond. Server error.")
     except Exception as e:
-        st.error(f"Embedding error: {e}")
+        st.error(f"Failed to reach Eliza: {e}")
 
-st.divider()
-st.markdown("## â›ï¸ Get Started Mining")
+st.markdown("---")
+st.header("Step 1: Get Mining")
+st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to set up Termux miner and generate your rig ID.")
+
+st.markdown("---")
+st.header("Step 2: Tokenize Your IP")
+st.caption("Coming soon: Deploy NFT + ERC20 from your uploaded idea.")
+
+st.markdown("---")
+st.header("Step 3: Join the DAO")
+if st.button("Generate Proposal"):
+    try:
+        prop = requests.post("https://xmrteliza.vercel.app/api/eliza", json={"prompt": "Help me write a proposal to reward early miners."})
+        st.code(prop.json()["output"])
+    except:
+        st.error("Eliza failed to generate the proposal.")
+        
+st.markdown("---")
+st.markdown("### Ecosystem Links")
 st.markdown("""
-Install Termux â†’ run `signup.py` â†’ generate your rig ID  
-Then visit [ðŸ“Š MESHNET Dashboard](https://xmrtdao.streamlit.app)
-""")
-
-st.divider()
-st.markdown("## ðŸ§  Tokenize Your IP")
-if st.button("Deploy NFT + ERC20 Token"):
-    eliza_response = eliza.send_message("What does deploying my IP token actually do?")
-    st.success(eliza_response.text)
-
-st.divider()
-st.markdown("## ðŸ—³ï¸ Propose to the DAO")
-if st.button("Write my proposal"):
-    proposal = eliza.send_message("Help me write a DAO proposal to reward early miners.")
-    st.code(proposal.text)
-
-st.divider()
-st.markdown("## ðŸŒ XMRT Ecosystem")
-st.markdown("""
-- [ðŸ“± MobileMonero.com](https://mobilemonero.com)
-- [ðŸ“Š MESHNET DAO Hub](https://xmrtdao.streamlit.app)
-- [ðŸ¤– Eliza Web Agent](https://xmrteliza.vercel.app)
-- [ðŸ“ GitHub Starter Kit](https://github.com/DevGruGold/xmrtnet/tree/main)
+- [MobileMonero.com](https://mobilemonero.com)
+- [XMRT MESHNET Hub](https://xmrtdao.streamlit.app)
+- [XMRT-Ecosystem GitHub](https://github.com/DevGruGold/XMRT-Ecosystem)
 """)
