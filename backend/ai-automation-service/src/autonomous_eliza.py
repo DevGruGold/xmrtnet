@@ -19,8 +19,6 @@ from web3 import Web3
 import requests
 from dotenv import load_dotenv
 
-from .eliza_memory_integration import XMRTElizaMemoryManager, MemoryContext # Import the memory manager
-
 load_dotenv()
 
 class AgentCapability(Enum):
@@ -107,22 +105,15 @@ class AutonomousElizaOS:
         self.last_health_check = datetime.now()
         
         self.logger.info("🤖 Autonomous ElizaOS System Initialized")
-
-        # Initialize XMRTElizaMemoryManager
-        self.memory_manager = XMRTElizaMemoryManager(config={
-            "vector_store_path": "data/vector_store", # This path should be relative to the service root
-            "max_memory_items": 10000,
-            "memory_retention_days": 365,
-        })
     
     def setup_logging(self):
         """Setup comprehensive logging for autonomous operations"""
         logging.basicConfig(
             level=logging.INFO,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
             handlers=[
-                logging.FileHandler("autonomous_eliza.log"),
-                logging.FileHandler("dao_decisions.log"),
+                logging.FileHandler('autonomous_eliza.log'),
+                logging.FileHandler('dao_decisions.log'),
                 logging.StreamHandler()
             ]
         )
@@ -394,77 +385,127 @@ class AutonomousElizaOS:
             AgentCapability.DEPLOYMENT: True,  # Full deployment autonomy
             "advanced_reasoning": True,
             "multimodal_analysis": True,
-            "predictive_modeling": True
         })
         
         self.logger.info("✅ System prepared for GPT-5 integration")
-    
-    # Placeholder methods for AI operations (would be implemented with actual AI calls)
+
+    async def _call_openai_api(self, prompt: str, max_tokens: int) -> str:
+        """Helper to call OpenAI API with retry logic and model fallback"""
+        for model in [self.ai_config["model"]] + self.ai_config["backup_models"]:
+            try:
+                client = openai.AsyncOpenAI(
+                    api_key=self.ai_config["api_key"],
+                    base_url=self.ai_config["api_base"]
+                )
+                chat_completion = await client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=self.ai_config["temperature"],
+                    max_tokens=max_tokens,
+                )
+                return chat_completion.choices[0].message.content
+            except openai.APIError as e:
+                self.logger.warning(f"OpenAI API error with {model}: {e}. Retrying with next model...")
+                await asyncio.sleep(5)  # Wait before retrying
+            except Exception as e:
+                self.logger.error(f"Unexpected error calling OpenAI API with {model}: {e}")
+                break
+        self.logger.error("All OpenAI models failed. Cannot complete AI operation.")
+        return "{}"
+
     async def analyze_proposal_with_ai(self, proposal) -> Dict[str, Any]:
         """AI analysis of governance proposals"""
-        # Use memory manager to store and retrieve relevant information for analysis
-        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
-        return {"confidence": 0.85, "recommendation": "approve", "risk": "low"}
+        response = await self._call_openai_api(
+            "You are an AI assistant for the XMRT DAO. Analyze the following governance proposal and provide a recommendation (approve/reject) and a confidence score (0-1). Also, assess the risk (low/medium/high) associated with the proposal.\n\nProposal: " + json.dumps(proposal),
+            max_tokens=500
+        )
+        try:
+            parsed_response = json.loads(response)
+            return {
+                "confidence": parsed_response.get("confidence", 0.5),
+                "recommendation": parsed_response.get("recommendation", "neutral"),
+                "risk": parsed_response.get("risk", "medium")
+            }
+        except json.JSONDecodeError:
+            self.logger.error(f"Failed to parse AI response for proposal analysis: {response}")
+            return {"confidence": 0.5, "recommendation": "neutral", "risk": "medium"}
     
     async def ai_treasury_optimization(self, treasury_status) -> Dict[str, Any]:
         """AI-powered treasury optimization"""
-        # Use memory manager to store and retrieve relevant information for optimization
-        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
-        return {"action_required": False, "confidence": 0.9}
+        response = await self._call_openai_api(
+            f"You are an AI assistant for the XMRT DAO treasury management. Analyze the current treasury status and provide optimization recommendations. Return JSON with 'action_required' (boolean), 'confidence' (0-1), 'description', 'parameters', 'value' (USD), and 'risk' (low/medium/high).\n\nTreasury Status: {json.dumps(treasury_status)}",
+            max_tokens=500
+        )
+        try:
+            parsed_response = json.loads(response)
+            return {
+                "action_required": parsed_response.get("action_required", False),
+                "confidence": parsed_response.get("confidence", 0.9),
+                "description": parsed_response.get("description", "No action required"),
+                "parameters": parsed_response.get("parameters", {}),
+                "value": parsed_response.get("value", 0),
+                "risk": parsed_response.get("risk", "low")
+            }
+        except json.JSONDecodeError:
+            self.logger.error(f"Failed to parse AI response for treasury optimization: {response}")
+            return {"action_required": False, "confidence": 0.9, "description": "No action required", "parameters": {}, "value": 0, "risk": "low"}
     
     async def generate_ai_response(self, message) -> str:
         """Generate AI response to community messages"""
-        # Use memory manager to generate contextual response
-        response_data = await self.memory_manager.generate_contextual_response(
-            user_input=message.get("content", ""),
-            user_id=message.get("author_id", "unknown_user"),
-            session_id=message.get("channel_id", "unknown_session"),
+        response = await self._call_openai_api(
+            f"You are an AI assistant for the XMRT DAO community. Generate a helpful and professional response to the following community message:\n\nMessage: {json.dumps(message)}",
+            max_tokens=200
         )
-        return response_data.get("response", "")
+        return response if response != "{}" else "Thank you for your message. The DAO is operating normally."
     
     async def ai_generate_insights(self, analytics) -> Dict[str, Any]:
         """Generate AI insights from analytics"""
-        # Use memory manager to store and retrieve relevant information for insights
-        # For now, this is a placeholder. Actual implementation would involve calling LLM with context.
-        return {"actionable_recommendations": []}
+        response = await self._call_openai_api(
+            f"You are an AI assistant for the XMRT DAO analytics. Analyze the following DAO analytics and provide actionable recommendations. Return JSON with 'actionable_recommendations' array containing objects with 'description', 'parameters', 'confidence', and 'risk'.\n\nAnalytics: {json.dumps(analytics)}",
+            max_tokens=500
+        )
+        try:
+            parsed_response = json.loads(response)
+            return {"actionable_recommendations": parsed_response.get("actionable_recommendations", [])}
+        except json.JSONDecodeError:
+            self.logger.error(f"Failed to parse AI response for analytics insights: {response}")
+            return {"actionable_recommendations": []}
     
     # Placeholder methods for blockchain/external integrations
     async def fetch_active_proposals(self) -> List[Dict]:
         """Fetch active governance proposals"""
+        # TODO: Implement actual blockchain integration
         return []
     
     async def get_treasury_status(self) -> Dict[str, Any]:
         """Get current treasury status"""
+        # TODO: Implement actual treasury monitoring
         return {"balance": 1000000, "assets": []}
     
     async def monitor_community_channels(self) -> Dict[str, Any]:
         """Monitor community channels for messages"""
-        # Simulate receiving a message that requires a response
-        # In a real scenario, this would come from a message queue or API
-        return {"messages": [{
-            "id": "msg123",
-            "author": "CommunityMember",
-            "author_id": "user_community_1",
-            "channel_id": "discord_general",
-            "content": "Hey Eliza, what's the latest on the XMRT tokenomics?",
-            "requires_response": True
-        }]}
+        # TODO: Implement actual community monitoring
+        return {"messages": []}
     
     async def security_threat_scan(self) -> Dict[str, Any]:
         """Scan for security threats"""
+        # TODO: Implement actual security monitoring
         return {"threats_detected": False}
     
     async def generate_dao_analytics(self) -> Dict[str, Any]:
         """Generate comprehensive DAO analytics"""
+        # TODO: Implement actual analytics generation
         return {"metrics": {}, "trends": {}}
     
     async def request_human_approval(self, action: AutonomousAction):
         """Request human approval for advisory actions"""
         self.logger.info(f"👤 Human approval requested for: {action.description}")
+        # TODO: Implement actual human approval system
     
     async def notify_emergency_action(self, action: AutonomousAction, result: Dict[str, Any]):
         """Notify about emergency actions taken"""
         self.logger.warning(f"📢 Emergency action notification: {action.description} - Result: {result}")
+        # TODO: Implement actual notification system
 
 # Global instance for autonomous operations
 autonomous_eliza = AutonomousElizaOS()
@@ -476,6 +517,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
