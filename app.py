@@ -2,6 +2,15 @@
 import streamlit as st
 import requests
 
+
+# Enhanced Eliza AI Complete Integration
+try:
+    from eliza_ai_enhanced import create_eliza_chat_interface, create_eliza_analytics_dashboard
+    ELIZA_AVAILABLE = True
+except ImportError:
+    ELIZA_AVAILABLE = False
+    print("⚠️ Enhanced Eliza not available. Ensure eliza_ai_enhanced.py is present.")
+
 st.set_page_config(page_title="XMRT Onboarding with Eliza", layout="centered")
 st.title("🌐 XMRT DAO Onboarding")
 st.subheader("The Token That Mines When the Internet Dies")
@@ -51,3 +60,48 @@ st.markdown("## 🌐 XMRT Ecosystem")
 st.markdown("- [MobileMonero.com](https://mobilemonero.com)")
 st.markdown("- [XMRT MESHNET Hub](https://xmrtdao.streamlit.app)")
 st.markdown("- [GitHub: XMRT-Ecosystem](https://github.com/DevGruGold/XMRT-Ecosystem)")
+
+
+
+# Enhanced Eliza AI Navigation
+with st.sidebar:
+    st.markdown("---")
+    st.subheader("🤖 Enhanced Eliza AI")
+    
+    if ELIZA_AVAILABLE:
+        # Main chat interface
+        if st.button("💬 Chat with Enhanced Eliza", use_container_width=True, type="primary"):
+            st.session_state.current_page = "eliza_chat"
+        
+        # Analytics dashboard
+        if st.button("📊 Eliza Analytics", use_container_width=True):
+            st.session_state.current_page = "eliza_analytics"
+        
+        # Quick status
+        if 'eliza' in st.session_state:
+            ai_status = "🟢 AI Enhanced" if st.session_state.eliza.ai_initialized else "🟡 Fallback"
+            st.caption(f"Status: {ai_status}")
+    else:
+        st.error("Enhanced Eliza unavailable")
+
+# Page routing for Enhanced Eliza
+if ELIZA_AVAILABLE:
+    current_page = st.session_state.get('current_page', 'main')
+    
+    if current_page == "eliza_chat":
+        st.markdown("---")
+        create_eliza_chat_interface()
+        
+        # Back to main button
+        if st.button("🏠 Back to Main", type="secondary"):
+            st.session_state.current_page = "main"
+            st.rerun()
+    
+    elif current_page == "eliza_analytics":
+        st.markdown("---")
+        create_eliza_analytics_dashboard()
+        
+        # Back to main button
+        if st.button("🏠 Back to Main", type="secondary"):
+            st.session_state.current_page = "main"
+            st.rerun()
