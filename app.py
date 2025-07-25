@@ -16,15 +16,24 @@ if prompt:
     with st.spinner("Eliza is thinking..."):
         try:
             response = requests.post("https://eliza-xmrt-dao.vercel.app/eliza", json={"prompt": prompt})
-            if response.ok:
+            st.markdown("🛠️ **Raw API response status:** " + str(response.status_code))
+
+            # Try to parse JSON
+            try:
                 json_data = response.json()
-                eliza_reply = json_data.get("response", json_data.get("error", "No response"))
+                st.json(json_data)  # Debug: print entire response JSON
+
+                eliza_reply = json_data.get("response", json_data.get("error", "❌ No valid response key in JSON"))
                 st.success("Eliza says:")
                 st.markdown(f"> {eliza_reply}")
-            else:
-                st.error("Eliza API returned an error.")
+
+            except Exception as json_err:
+                st.error("❌ JSON decode failed: " + str(json_err))
+                st.text("🔴 Raw response text:
+" + response.text)
+
         except Exception as e:
-            st.error(f"Failed to reach Eliza: {e}")
+            st.error("🔴 General connection error: " + str(e))
 
 st.divider()
 st.header("⛏️ Get Started Mining")
@@ -40,8 +49,8 @@ if st.button("Generate DAO Proposal"):
     try:
         proposal = requests.post("https://eliza-xmrt-dao.vercel.app/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
         st.code(proposal.json().get("response", "Proposal generation failed."))
-    except:
-        st.error("Proposal generation failed. Try again later.")
+    except Exception as e:
+        st.error("🔴 Proposal generation failed: " + str(e))
 
 st.divider()
 st.markdown("## 🌐 XMRT Ecosystem")
