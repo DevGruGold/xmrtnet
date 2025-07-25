@@ -1,1 +1,2 @@
-streamlit\nrequests\n
+streamlit
+requests

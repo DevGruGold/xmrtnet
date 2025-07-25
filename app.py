@@ -1,3 +1,4 @@
+
 import streamlit as st
 import requests
 
@@ -23,7 +24,7 @@ if prompt:
 
 st.divider()
 st.header("⛏️ Get Started Mining")
-st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to install Termux, run `signup.py`, and generate your rig ID.")
+st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to install Termux, run signup.py, and generate your rig ID.")
 
 st.divider()
 st.header("🧠 Tokenize Your IP")
