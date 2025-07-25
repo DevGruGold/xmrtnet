@@ -13,40 +13,41 @@ prompt = st.text_input("💬 Ask Eliza a question", placeholder="e.g., How do I 
 if prompt:
     with st.spinner("Eliza is thinking..."):
         try:
-            response = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": prompt})
-            st.markdown(f"🛠️ **Raw API status code:** {response.status_code}")
+            response = requests.post(
+                "https://xmrteliza.vercel.app/api/eliza",
+                json={"prompt": prompt},
+                timeout=15
+            )
+            st.markdown(f"🛠️ Raw status: `{response.status_code}`")
             try:
                 json_data = response.json()
-                st.markdown("📦 **Parsed JSON:**")
-                st.json(json_data)
-                eliza_reply = json_data.get("response") or json_data.get("error", "No usable response.")
-                st.success("Eliza says:")
-                st.markdown(f"> {eliza_reply}")
+                st.markdown("📦 Eliza replied:")
+                st.success(json_data.get("response", "No message"))
             except Exception as json_err:
-                st.error("❌ JSON decode error.")
+                st.error("❌ Failed to parse JSON")
                 st.code(response.text)
         except Exception as net_err:
-            st.error(f"🔴 Network/Connection Error: {net_err}")
+            st.error(f"🔴 Network Error: {net_err}")
 
 st.divider()
-st.header("⛏️ Get Started Mining")
+st.header("⛏️ Step 1: Get Started Mining")
 st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to install Termux, run signup.py, and generate your rig ID.")
 
 st.divider()
-st.header("🧠 Tokenize Your IP")
+st.header("🧠 Step 2: Tokenize Your IP")
 st.caption("Coming soon: Deploy your ideas as NFT + ERC20 tokens.")
 
 st.divider()
-st.header("🗳️ Join the DAO")
-if st.button("Generate DAO Proposal"):
+st.header("🗳️ Step 3: Join the DAO")
+if st.button("💡 Generate DAO Proposal"):
     try:
-        proposal = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
-        st.code(proposal.json().get("response", "Proposal generation failed."))
+        proposal = requests.post("https://xmrteliza.vercel.app/api/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
+        st.code(proposal.json().get("response", "Proposal failed"))
     except Exception as e:
-        st.error(f"❌ Proposal request failed: {e}")
+        st.error(f"❌ Proposal error: {e}")
 
 st.divider()
 st.markdown("## 🌐 XMRT Ecosystem")
 st.markdown("- [MobileMonero.com](https://mobilemonero.com)")
 st.markdown("- [XMRT MESHNET Hub](https://xmrtdao.streamlit.app)")
-st.markdown("- [XMRT-Ecosystem GitHub](https://github.com/DevGruGold/XMRT-Ecosystem)")
+st.markdown("- [GitHub: XMRT-Ecosystem](https://github.com/DevGruGold/XMRT-Ecosystem)")
