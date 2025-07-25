@@ -1,44 +1,45 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="XMRT Onboarding", layout="centered")
-st.title("XMRT DAO Onboarding")
+st.set_page_config(page_title="XMRT Onboarding with Eliza", layout="centered")
+st.title("🌐 XMRT DAO Onboarding")
 st.subheader("The Token That Mines When the Internet Dies")
 
-st.markdown("Welcome! Let Eliza guide you through setting up your XMRT miner rig.")
+st.markdown("""
+Welcome to XMRT. This onboarding assistant is powered by **Eliza**, the autonomous AI agent guiding new users through setup, mining, and DAO participation.
+""")
 
-alias = st.text_input("What's your alias, miner?")
+prompt = st.text_input("💬 Ask Eliza a question", placeholder="e.g., How do I start mining on my phone?")
 
-if alias:
-    st.markdown("### Eliza says:")
+if prompt:
+    with st.spinner("Eliza is thinking..."):
+        try:
+            response = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": prompt})
+            eliza_reply = response.json().get("response", "No response received.")
+            st.success("Eliza says:")
+            st.markdown(f"> {eliza_reply}")
+        except Exception as e:
+            st.error(f"Failed to reach Eliza: {e}")
+
+st.divider()
+st.header("⛏️ Get Started Mining")
+st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to install Termux, run `signup.py`, and generate your rig ID.")
+
+st.divider()
+st.header("🧠 Tokenize Your IP")
+st.caption("Coming soon: Deploy your ideas as NFT + ERC20 tokens.")
+
+st.divider()
+st.header("🗳️ Join the DAO")
+if st.button("Generate DAO Proposal"):
     try:
-        response = requests.post("https://xmrteliza.vercel.app/api/eliza", json={"prompt": f"My name is {alias}. Help me get started."})
-        if response.status_code == 200:
-            st.success(response.json()["output"])
-        else:
-            st.error("Eliza couldn't respond. Server error.")
-    except Exception as e:
-        st.error(f"Failed to reach Eliza: {e}")
-
-st.markdown("---")
-st.header("Step 1: Get Mining")
-st.markdown("[Visit MobileMonero.com](https://mobilemonero.com) to set up Termux miner and generate your rig ID.")
-
-st.markdown("---")
-st.header("Step 2: Tokenize Your IP")
-st.caption("Coming soon: Deploy NFT + ERC20 from your uploaded idea.")
-
-st.markdown("---")
-st.header("Step 3: Join the DAO")
-if st.button("Generate Proposal"):
-    try:
-        prop = requests.post("https://xmrteliza.vercel.app/api/eliza", json={"prompt": "Help me write a proposal to reward early miners."})
-        st.code(prop.json()["output"])
+        proposal = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
+        st.code(proposal.json()["response"])
     except:
-        st.error("Eliza failed to generate the proposal.")
-        
-st.markdown("---")
-st.markdown("### Ecosystem Links")
+        st.error("Proposal generation failed. Try again later.")
+
+st.divider()
+st.markdown("## 🌐 XMRT Ecosystem")
 st.markdown("""
 - [MobileMonero.com](https://mobilemonero.com)
 - [XMRT MESHNET Hub](https://xmrtdao.streamlit.app)
