@@ -15,10 +15,14 @@ prompt = st.text_input("💬 Ask Eliza a question", placeholder="e.g., How do I 
 if prompt:
     with st.spinner("Eliza is thinking..."):
         try:
-            response = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": prompt})
-            eliza_reply = response.json().get("response", "No response received.")
-            st.success("Eliza says:")
-            st.markdown(f"> {eliza_reply}")
+            response = requests.post("https://eliza-xmrt-dao.vercel.app/eliza", json={"prompt": prompt})
+            if response.ok:
+                json_data = response.json()
+                eliza_reply = json_data.get("response", json_data.get("error", "No response"))
+                st.success("Eliza says:")
+                st.markdown(f"> {eliza_reply}")
+            else:
+                st.error("Eliza API returned an error.")
         except Exception as e:
             st.error(f"Failed to reach Eliza: {e}")
 
@@ -34,8 +38,8 @@ st.divider()
 st.header("🗳️ Join the DAO")
 if st.button("Generate DAO Proposal"):
     try:
-        proposal = requests.post("https://xmrteliza.vercel.app/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
-        st.code(proposal.json()["response"])
+        proposal = requests.post("https://eliza-xmrt-dao.vercel.app/eliza", json={"prompt": "Help me write a DAO proposal to reward early miners."})
+        st.code(proposal.json().get("response", "Proposal generation failed."))
     except:
         st.error("Proposal generation failed. Try again later.")
 
