@@ -9,6 +9,25 @@ CYCLE_COUNT_START = 1
 CYCLES_TO_RUN = 1000
 WORKDIR = '/tmp/eliza_tools'
 
+# --- OUTBOUND INTEGRATIONS ---
+def post_to_discord(message):
+    webhook = os.getenv('DISCORD_WEBHOOK_URL')
+    if webhook:
+        try:
+            requests.post(webhook, json={"content": message})
+            return True
+        except Exception as e:
+            print(f"Discord post failed: {e}")
+    return False
+
+def tweet(message):
+    # You can fill this in with Twitter/X API, e.g. using Tweepy
+    # api = tweepy.API(auth)
+    # api.update_status(message)
+    print(f"Tweet (placeholder): {message}")
+    return False
+
+# --- GITHUB SETUP ---
 g = Github(GITHUB_TOKEN)
 repo_obj = g.get_user(GITHUB_USER).get_repo(TARGET_REPO)
 
@@ -66,15 +85,31 @@ def get_monero_price():
 def do_real_task(domain, task, repo_obj, cycle_count):
     # MARKETING
     if domain == "marketing" and "Twitter thread" in task:
+        tweet_text = "XMRT milestone update: privacy for a new era! 🚀 #Crypto #Privacy"
+        # Actually tweet and log
+        tweeted = tweet(tweet_text)
         filename = "MARKETING_IDEAS.md"
-        content = f"Cycle: {cycle_count}\nDrafted Twitter thread: 'XMRT, privacy for a new era! 🚀 #Crypto #Privacy'\n"
+        content = f"Cycle: {cycle_count}\nTweeted: {tweet_text}\nSuccess: {tweeted}\n"
         try:
             file = repo_obj.get_contents(filename)
             repo_obj.update_file(filename, "🤖 Update marketing ideas", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-            return True, f"Drafted and logged a Twitter thread in MARKETING_IDEAS.md"
         except Exception:
             repo_obj.create_file(filename, "🤖 Create marketing ideas", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-            return True, "Drafted and logged a Twitter thread in MARKETING_IDEAS.md"
+        return tweeted, "Real tweet action attempted (see log for result)."
+
+    # SOCIAL MEDIA
+    if domain == "social_media" and "Discord AMA" in task:
+        message = f"Eliza scheduling next Discord AMA: {time.ctime()}"
+        posted = post_to_discord(message)
+        filename = "SOCIAL_MEDIA_ACTION_LOG.md"
+        content = f"Cycle: {cycle_count}\nDiscord AMA scheduled: {message}\nSuccess: {posted}\n"
+        try:
+            file = repo_obj.get_contents(filename)
+            repo_obj.update_file(filename, "🤖 Log Discord AMA", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+        except Exception:
+            repo_obj.create_file(filename, "🤖 Log Discord AMA", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+        return posted, "Real Discord message sent (see log for result)."
+
     # DEVELOPMENT
     if domain == "development" and "unit tests" in task:
         filename = "DEVELOPMENT_TEST_PLAN.md"
@@ -86,6 +121,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         except Exception:
             repo_obj.create_file(filename, "🤖 Create dev test plan", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
             return True, "Logged unit test expansion in DEVELOPMENT_TEST_PLAN.md"
+
     # MINING
     if domain == "mining" and "pool hashrate" in task:
         filename = "MINING_STATS.md"
@@ -97,6 +133,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         except Exception:
             repo_obj.create_file(filename, "🤖 Create mining stats", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
             return True, "Recorded mining pool check in MINING_STATS.md"
+
     # ANALYTICS
     if domain == "analytics" and "Monero price" in task:
         price = get_monero_price()
@@ -109,7 +146,8 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         except Exception:
             repo_obj.create_file(filename, "🤖 Create market data", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
             return True, f"Recorded real Monero price: {price} in MARKET_DATA.md"
-    # Add more as needed for browser/social_media...
+
+    # Add more as needed for browser...
     return False, "No actionable real task found."
 
 cycle_count = CYCLE_COUNT_START
