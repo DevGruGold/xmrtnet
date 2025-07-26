@@ -1,3 +1,7 @@
 # TODO List for Development
 
-- [x] Optimize gas usage  (Done at Sat Jul 26 22:14:40 2025: Simulated completion: - [ ] Optimize gas usage)
+- [x] Review and refactor main smart contracts  (Done at Sat Jul 26 22:15:06 2025: Simulated completion: - [ ] Review and refactor main smart contracts)
+- [ ] Write/expand unit tests
+- [ ] Check for dependency vulnerabilities
+- [ ] Audit recent PRs
+- [ ] Optimize gas usage
