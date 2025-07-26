@@ -1,8 +1,5 @@
 
-import os
-import time
-import random
-import requests
+import os, time, random, requests
 from github import Github, InputGitAuthor
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
@@ -10,7 +7,7 @@ GITHUB_USER = os.getenv('GITHUB_USER', 'DevGruGold')
 TARGET_REPO = os.getenv('TARGET_REPO', 'xmrtnet')
 CYCLE_COUNT_START = 1
 CYCLES_TO_RUN = 5
-WORKDIR = '/content/eliza_tools'
+WORKDIR = '/tmp/eliza_tools'
 
 g = Github(GITHUB_TOKEN)
 repo_obj = g.get_user(GITHUB_USER).get_repo(TARGET_REPO)
