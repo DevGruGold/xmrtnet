@@ -1,10 +1,10 @@
 services:
   - type: worker
-    name: eliza-bulletproof
+    name: eliza-truly-continuous
     env: python
     plan: starter
     buildCommand: pip install -r requirements.txt
-    startCommand: python eliza_bulletproof.py
+    startCommand: python eliza_truly_continuous.py
     envVars:
       - key: GITHUB_TOKEN
         sync: false
@@ -12,5 +12,5 @@ services:
         value: DevGruGold/xmrtnet
       - key: CHECK_INTERVAL
         value: "300"
-    autoDeploy: true
+    autoDeploy: false
     branch: main
