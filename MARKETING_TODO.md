@@ -1,6 +1,5 @@
 # TODO List for Marketing
 
-- [x] Draft new Twitter thread on XMRT privacy  (Done at Sat Jul 26 22:27:20 2025: Drafted and logged a Twitter thread in MARKETING_IDEAS.md)
-- [ ] Update website with latest milestones
+- [x] Update website with latest milestones  (Done at Sat Jul 26 22:27:48 2025: No actionable real task found.)
 - [ ] Prepare Q3 newsletter
 - [ ] Analyze Telegram engagement stats
