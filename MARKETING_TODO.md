@@ -1,5 +1,4 @@
 # TODO List for Marketing
 
-- [x] Update website with latest milestones  (Done at Sat Jul 26 23:00:46 2025: No actionable real task found.)
-- [ ] Prepare Q3 newsletter
+- [x] Prepare Q3 newsletter  (Done at Sat Jul 26 23:01:13 2025: No actionable real task found.)
 - [ ] Analyze Telegram engagement stats
