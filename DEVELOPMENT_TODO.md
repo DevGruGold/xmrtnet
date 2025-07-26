@@ -1,3 +1,7 @@
 # TODO List for Development
 
-- [x] Optimize gas usage  (Done at Sat Jul 26 23:11:45 2025: No actionable real task found.)
+- [x] Review and refactor main smart contracts  (Done at Sat Jul 26 23:12:18 2025: No actionable real task found.)
+- [ ] Write/expand unit tests
+- [ ] Check for dependency vulnerabilities
+- [ ] Audit recent PRs
+- [ ] Optimize gas usage
