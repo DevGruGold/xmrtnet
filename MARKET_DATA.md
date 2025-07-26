@@ -1,3 +1,3 @@
-Cycle: 126
-Monero (XMR) price (USD): 323.59
-Checked at: Sat Jul 26 22:27:09 2025
+Cycle: 144
+Monero (XMR) price (USD): API error: 'monero'
+Checked at: Sat Jul 26 22:28:34 2025
