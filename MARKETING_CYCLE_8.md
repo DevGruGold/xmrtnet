@@ -30,3 +30,14 @@ Current TODO List:
 
 - [x] Prepare Q3 newsletter  (Done at Sat Jul 26 22:08:56 2025: Simulated completion: - [ ] Prepare Q3 newsletter)
 - [ ] Analyze Telegram engagement stats
+
+# Marketing Cycle 8
+
+Accomplished: Drafted and logged a Twitter thread in MARKETING_IDEAS.md
+
+Current TODO List:
+
+- [x] Draft new Twitter thread on XMRT privacy  (Done at Sat Jul 26 22:17:41 2025: Drafted and logged a Twitter thread in MARKETING_IDEAS.md)
+- [ ] Update website with latest milestones
+- [ ] Prepare Q3 newsletter
+- [ ] Analyze Telegram engagement stats
