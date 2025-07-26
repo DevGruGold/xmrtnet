@@ -6,78 +6,219 @@ import time
 
 # Configure page
 st.set_page_config(
-    page_title="XMRT DAO - Decentralized Future",
+    page_title="XMRT DAO",
     page_icon="🌐",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for beautiful UI
+# Mobile-First CSS
 st.markdown('''
 <style>
+    /* Hide Streamlit default elements for cleaner mobile look */
+    .stDeployButton {display:none;}
+    footer {visibility: hidden;}
+    .stDecoration {display:none;}
+    
+    /* Mobile-first responsive design */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        max-width: 100%;
+    }
+    
+    /* Beautiful header - mobile optimized */
     .main-header {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        padding: 2rem;
-        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+        padding: 1.5rem 1rem;
+        border-radius: 15px;
         color: white;
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     }
     
+    .main-header h1 {
+        font-size: 1.8rem;
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .main-header h3 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+        opacity: 0.9;
+    }
+    
+    .main-header p {
+        font-size: 0.85rem;
+        margin: 0;
+        opacity: 0.8;
+    }
+    
+    /* Chat container - perfect for mobile */
     .chat-container {
         background: #f8f9fa;
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        border-left: 5px solid #667eea;
-    }
-    
-    .agent-card {
-        background: white;
-        border-radius: 10px;
+        border-radius: 20px;
         padding: 1rem;
-        margin: 0.5rem 0;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        border-left: 4px solid #28a745;
+        margin: 1rem 0;
+        border: 1px solid #e9ecef;
+        min-height: 400px;
+        max-height: 500px;
+        overflow-y: auto;
     }
     
+    /* Message bubbles - mobile optimized */
     .user-message {
-        background: #667eea;
+        background: linear-gradient(135deg, #667eea, #764ba2);
         color: white;
-        padding: 0.8rem;
-        border-radius: 15px 15px 5px 15px;
+        padding: 0.75rem 1rem;
+        border-radius: 18px 18px 5px 18px;
         margin: 0.5rem 0;
-        max-width: 80%;
+        max-width: 85%;
         margin-left: auto;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        word-wrap: break-word;
     }
     
     .agent-message {
-        background: #e9ecef;
+        background: white;
         color: #333;
-        padding: 0.8rem;
-        border-radius: 15px 15px 15px 5px;
+        padding: 0.75rem 1rem;
+        border-radius: 18px 18px 18px 5px;
         margin: 0.5rem 0;
-        max-width: 80%;
-        border-left: 3px solid #28a745;
+        max-width: 85%;
+        border-left: 4px solid #28a745;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        word-wrap: break-word;
     }
     
-    .status-indicator {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        margin-right: 8px;
+    /* Agent status cards - mobile friendly */
+    .agent-card {
+        background: white;
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-left: 4px solid #28a745;
+        font-size: 0.85rem;
     }
     
-    .status-online { background-color: #28a745; }
-    .status-offline { background-color: #dc3545; }
-    
+    /* Metrics cards - mobile grid */
     .metric-card {
         background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
+        padding: 1rem;
+        border-radius: 12px;
         text-align: center;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 0.5rem 0;
+        border-top: 3px solid #667eea;
+    }
+    
+    .metric-card h2 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+    
+    .metric-card h3 {
+        font-size: 1.2rem;
+        margin: 0.5rem 0;
+        color: #667eea;
+    }
+    
+    .metric-card p {
+        font-size: 0.8rem;
+        margin: 0;
+        color: #666;
+    }
+    
+    /* Mobile input styling */
+    .stTextInput > div > div > input {
+        border-radius: 25px;
+        border: 2px solid #e9ecef;
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .stTextInput > div > div > input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+    }
+    
+    /* Button styling */
+    .stButton > button {
+        border-radius: 25px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Sidebar styling for mobile */
+    .css-1d391kg {
+        padding-top: 1rem;
+    }
+    
+    /* Form styling */
+    .stForm {
+        border: none;
+        padding: 0;
+    }
+    
+    /* Selectbox styling */
+    .stSelectbox > div > div {
+        border-radius: 15px;
+        border: 2px solid #e9ecef;
+    }
+    
+    /* Mobile responsive adjustments */
+    @media (max-width: 768px) {
+        .main-header {
+            padding: 1rem 0.5rem;
+        }
+        
+        .main-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .main-header h3 {
+            font-size: 0.9rem;
+        }
+        
+        .chat-container {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+        }
+        
+        .user-message, .agent-message {
+            max-width: 90%;
+            font-size: 0.85rem;
+            padding: 0.6rem 0.8rem;
+        }
+        
+        .metric-card {
+            padding: 0.75rem;
+        }
+    }
+    
+    /* Loading spinner */
+    .stSpinner {
+        text-align: center;
+    }
+    
+    /* Footer styling */
+    .footer {
+        text-align: center;
+        color: #666;
+        padding: 1rem;
+        font-size: 0.8rem;
+        border-top: 1px solid #e9ecef;
+        margin-top: 2rem;
     }
 </style>
 ''', unsafe_allow_html=True)
@@ -91,158 +232,168 @@ st.markdown('''
 </div>
 ''', unsafe_allow_html=True)
 
-# Sidebar for agent status
-with st.sidebar:
-    st.markdown("## 🤖 Agent Status")
-    
-    # Check agent health
-    agents = [
-        {"name": "Eliza", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🧠"},
-        {"name": "DAO Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🏛️"},
-        {"name": "Mining Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "⛏️"},
-        {"name": "Treasury Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "💰"},
-        {"name": "Governance Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🗳️"}
-    ]
-    
-    for agent in agents:
-        try:
-            response = requests.get(agent["endpoint"], timeout=5)
-            status = "🟢 Online" if response.status_code == 200 else "🔴 Offline"
-        except:
-            status = "🔴 Offline"
+# Mobile-optimized layout
+if st.sidebar.button("📊 Show Agent Status"):
+    with st.sidebar:
+        st.markdown("### 🤖 Agent Status")
         
-        st.markdown(f'''
-        <div class="agent-card">
-            {agent["icon"]} <strong>{agent["name"]}</strong><br>
-            <small>{status}</small>
-        </div>
-        ''', unsafe_allow_html=True)
-
-# Main content area
-col1, col2 = st.columns([2, 1])
-
-with col1:
-    st.markdown("## 💬 Chat with XMRT Agents")
-    
-    # Initialize chat history
-    if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! I'm Eliza, your XMRT DAO assistant. Ask me about DAOs, governance, mining, or anything related to decentralized systems!", "agent": "Eliza"}
+        agents = [
+            {"name": "Eliza", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🧠"},
+            {"name": "DAO Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🏛️"},
+            {"name": "Mining Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "⛏️"},
+            {"name": "Treasury Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "💰"},
+            {"name": "Governance Agent", "endpoint": "https://xmrtnet.onrender.com/api/eliza/health", "icon": "🗳️"}
         ]
-    
-    # Chat container
-    chat_container = st.container()
-    
-    with chat_container:
-        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
         
-        # Display chat messages
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f'''<div class="user-message"><strong>You:</strong> {message["content"]}</div>''', unsafe_allow_html=True)
-            else:
-                agent_name = message.get("agent", "Assistant")
-                st.markdown(f'''<div class="agent-message"><strong>🤖 {agent_name}:</strong> {message["content"]}</div>''', unsafe_allow_html=True)
-        
-        st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Chat input
-    with st.form("chat_form", clear_on_submit=True):
-        col_input, col_agent, col_send = st.columns([3, 1, 1])
-        
-        with col_input:
-            user_input = st.text_input("Ask anything...", placeholder="e.g., How does DAO voting work?")
-        
-        with col_agent:
-            selected_agent = st.selectbox("Agent", ["Eliza", "DAO Agent", "Mining Agent", "Treasury Agent", "Governance Agent"])
-        
-        with col_send:
-            st.markdown("<br>", unsafe_allow_html=True)
-            send_button = st.form_submit_button("Send 🚀")
-    
-    if send_button and user_input:
-        # Add user message
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        
-        # Show thinking indicator
-        with st.spinner(f"{selected_agent} is thinking..."):
+        for agent in agents:
             try:
-                # Call the appropriate agent API
-                api_url = "https://xmrtnet.onrender.com/api/eliza"
+                response = requests.get(agent["endpoint"], timeout=3)
+                status = "🟢 Online" if response.status_code == 200 else "🔴 Offline"
+            except:
+                status = "🔴 Offline"
+            
+            st.markdown(f'''
+            <div class="agent-card">
+                {agent["icon"]} <strong>{agent["name"]}</strong><br>
+                <small>{status}</small>
+            </div>
+            ''', unsafe_allow_html=True)
+
+# Main chat interface
+st.markdown("## 💬 Chat with XMRT Agents")
+
+# Initialize chat history
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hello! I'm Eliza, your XMRT DAO assistant. Ask me about DAOs, governance, mining, or decentralized systems!", "agent": "Eliza"}
+    ]
+
+# Chat container
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
+# Display chat messages
+for message in st.session_state.messages:
+    if message["role"] == "user":
+        st.markdown(f'''<div class="user-message"><strong>You:</strong> {message["content"]}</div>''', unsafe_allow_html=True)
+    else:
+        agent_name = message.get("agent", "Assistant")
+        st.markdown(f'''<div class="agent-message"><strong>🤖 {agent_name}:</strong> {message["content"]}</div>''', unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Mobile-optimized input form
+with st.form("chat_form", clear_on_submit=True):
+    # Stack inputs vertically on mobile
+    user_input = st.text_input("💬 Ask anything...", placeholder="e.g., How does DAO voting work?")
+    
+    col1, col2 = st.columns([2, 1])
+    with col1:
+        selected_agent = st.selectbox("🤖 Choose Agent", ["Eliza", "DAO Agent", "Mining Agent", "Treasury Agent", "Governance Agent"])
+    with col2:
+        st.markdown("<br>", unsafe_allow_html=True)
+        send_button = st.form_submit_button("Send 🚀", use_container_width=True)
+
+if send_button and user_input:
+    # Add user message
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    
+    # Show thinking indicator
+    with st.spinner(f"🤔 {selected_agent} is thinking..."):
+        try:
+            response = requests.post(
+                "https://xmrtnet.onrender.com/api/eliza",
+                json={"message": user_input},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                agent_response = response.json().get("response", "I'm having trouble responding right now.")
+                source = response.json().get("source", "unknown")
                 
-                response = requests.post(
-                    api_url,
-                    json={"message": user_input},
-                    timeout=30
-                )
-                
-                if response.status_code == 200:
-                    agent_response = response.json().get("response", "I'm having trouble responding right now.")
-                    source = response.json().get("source", "unknown")
-                    
-                    # Add agent response
-                    st.session_state.messages.append({
-                        "role": "assistant", 
-                        "content": agent_response,
-                        "agent": selected_agent,
-                        "source": source
-                    })
-                else:
-                    st.session_state.messages.append({
-                        "role": "assistant",
-                        "content": "I'm experiencing technical difficulties. Please try again.",
-                        "agent": selected_agent
-                    })
-                    
-            except Exception as e:
+                st.session_state.messages.append({
+                    "role": "assistant", 
+                    "content": agent_response,
+                    "agent": selected_agent,
+                    "source": source
+                })
+            else:
                 st.session_state.messages.append({
                     "role": "assistant",
-                    "content": f"Connection error: {str(e)}",
+                    "content": "I'm experiencing technical difficulties. Please try again.",
                     "agent": selected_agent
                 })
-        
-        st.rerun()
+                
+        except Exception as e:
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": f"Connection error. Please check your internet and try again.",
+                "agent": selected_agent
+            })
+    
+    st.rerun()
 
-with col2:
-    st.markdown("## 📊 DAO Metrics")
+# Mobile metrics section
+if st.button("📊 Show DAO Metrics", use_container_width=True):
+    st.markdown("### 📈 DAO Metrics")
     
-    # Metrics cards
-    metrics = [
-        {"title": "Active Agents", "value": "5", "icon": "🤖"},
-        {"title": "DAO Proposals", "value": "12", "icon": "📋"},
-        {"title": "Mining Nodes", "value": "1,247", "icon": "⛏️"},
-        {"title": "Treasury Balance", "value": "$2.4M", "icon": "💰"}
-    ]
+    col1, col2 = st.columns(2)
     
-    for metric in metrics:
-        st.markdown(f'''
+    with col1:
+        st.markdown('''
         <div class="metric-card">
-            <h2>{metric["icon"]}</h2>
-            <h3>{metric["value"]}</h3>
-            <p>{metric["title"]}</p>
+            <h2>🤖</h2>
+            <h3>5</h3>
+            <p>Active Agents</p>
         </div>
         ''', unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
+        
+        st.markdown('''
+        <div class="metric-card">
+            <h2>⛏️</h2>
+            <h3>1,247</h3>
+            <p>Mining Nodes</p>
+        </div>
+        ''', unsafe_allow_html=True)
     
-    st.markdown("## 🎯 Quick Actions")
-    
+    with col2:
+        st.markdown('''
+        <div class="metric-card">
+            <h2>📋</h2>
+            <h3>12</h3>
+            <p>DAO Proposals</p>
+        </div>
+        ''', unsafe_allow_html=True)
+        
+        st.markdown('''
+        <div class="metric-card">
+            <h2>💰</h2>
+            <h3>$2.4M</h3>
+            <p>Treasury Balance</p>
+        </div>
+        ''', unsafe_allow_html=True)
+
+# Quick actions
+st.markdown("### 🎯 Quick Actions")
+col1, col2 = st.columns(2)
+
+with col1:
     if st.button("🗳️ View Proposals", use_container_width=True):
-        st.info("Governance proposals coming soon!")
-    
-    if st.button("⛏️ Mining Status", use_container_width=True):
-        st.info("Mining dashboard coming soon!")
+        st.info("🚀 Governance proposals coming soon!")
     
     if st.button("💰 Treasury Info", use_container_width=True):
-        st.info("Treasury analytics coming soon!")
+        st.info("📊 Treasury analytics coming soon!")
+
+with col2:
+    if st.button("⛏️ Mining Status", use_container_width=True):
+        st.info("⚡ Mining dashboard coming soon!")
     
     if st.button("📚 DAO Guide", use_container_width=True):
-        st.info("Educational resources coming soon!")
+        st.info("📖 Educational resources coming soon!")
 
 # Footer
-st.markdown("---")
 st.markdown('''
-<div style="text-align: center; color: #666; padding: 2rem;">
-    <p>🌐 XMRT DAO - Building the Decentralized Future</p>
-    <p><small>Powered by Autonomous AI Agents | Resilient Mining Network | Community Governance</small></p>
+<div class="footer">
+    <p>🌐 <strong>XMRT DAO</strong> - Building the Decentralized Future</p>
+    <p>Powered by Autonomous AI Agents • Resilient Mining Network • Community Governance</p>
 </div>
 ''', unsafe_allow_html=True)
