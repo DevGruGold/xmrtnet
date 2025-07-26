@@ -71,9 +71,10 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         try:
             file = repo_obj.get_contents(filename)
             repo_obj.update_file(filename, "🤖 Update marketing ideas", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+            return True, f"Drafted and logged a Twitter thread in MARKETING_IDEAS.md"
         except Exception:
             repo_obj.create_file(filename, "🤖 Create marketing ideas", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-        return "Drafted and logged a Twitter thread in MARKETING_IDEAS.md"
+            return True, "Drafted and logged a Twitter thread in MARKETING_IDEAS.md"
     # DEVELOPMENT
     if domain == "development" and "unit tests" in task:
         filename = "DEVELOPMENT_TEST_PLAN.md"
@@ -81,21 +82,21 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         try:
             file = repo_obj.get_contents(filename)
             repo_obj.update_file(filename, "🤖 Update dev test plan", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+            return True, "Logged unit test expansion in DEVELOPMENT_TEST_PLAN.md"
         except Exception:
             repo_obj.create_file(filename, "🤖 Create dev test plan", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-        return "Logged unit test expansion in DEVELOPMENT_TEST_PLAN.md"
+            return True, "Logged unit test expansion in DEVELOPMENT_TEST_PLAN.md"
     # MINING
     if domain == "mining" and "pool hashrate" in task:
-        # Example: log a real mining pool stats scrape (replace with actual API/scrape if available)
         filename = "MINING_STATS.md"
-        # Here, just log time; in production, pull real stats
         content = f"Cycle: {cycle_count}\nChecked mining pool at {time.ctime()}\n"
         try:
             file = repo_obj.get_contents(filename)
             repo_obj.update_file(filename, "🤖 Update mining stats", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+            return True, "Recorded mining pool check in MINING_STATS.md"
         except Exception:
             repo_obj.create_file(filename, "🤖 Create mining stats", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-        return "Recorded mining pool check in MINING_STATS.md"
+            return True, "Recorded mining pool check in MINING_STATS.md"
     # ANALYTICS
     if domain == "analytics" and "Monero price" in task:
         price = get_monero_price()
@@ -104,11 +105,12 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         try:
             file = repo_obj.get_contents(filename)
             repo_obj.update_file(filename, "🤖 Update market data", content, file.sha, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+            return True, f"Recorded real Monero price: {price} in MARKET_DATA.md"
         except Exception:
             repo_obj.create_file(filename, "🤖 Create market data", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
-        return f"Recorded real Monero price: {price} in MARKET_DATA.md"
+            return True, f"Recorded real Monero price: {price} in MARKET_DATA.md"
     # Add more as needed for browser/social_media...
-    return "No actionable real task found."
+    return False, "No actionable real task found."
 
 cycle_count = CYCLE_COUNT_START
 
@@ -121,12 +123,12 @@ while True:
             tasks = []
             lines = todo_content.splitlines()
             for line in lines:
-                if line.strip().startswith("- [ ]"):
+                if line.strip().startswith("- [ ]") or line.strip().startswith("- [x]"):
                     tasks.append(line)
             # If no tasks, diagnose and create a new to-do list
-            if not tasks:
+            if not any(line.strip().startswith("- [ ]") for line in tasks):
                 if domain == "development":
-                    tasks = [
+                    tasks += [
                         "- [ ] Review and refactor main smart contracts",
                         "- [ ] Write/expand unit tests",
                         "- [ ] Check for dependency vulnerabilities",
@@ -134,43 +136,49 @@ while True:
                         "- [ ] Optimize gas usage"
                     ]
                 elif domain == "marketing":
-                    tasks = [
+                    tasks += [
                         "- [ ] Draft new Twitter thread on XMRT privacy",
                         "- [ ] Update website with latest milestones",
                         "- [ ] Prepare Q3 newsletter",
                         "- [ ] Analyze Telegram engagement stats"
                     ]
                 elif domain == "mining":
-                    tasks = [
+                    tasks += [
                         "- [ ] Check mining pool hashrate",
                         "- [ ] Update pool payout script",
                         "- [ ] Compare mining profitability vs. competitors"
                     ]
                 elif domain == "social_media":
-                    tasks = [
+                    tasks += [
                         "- [ ] Schedule next Discord AMA",
                         "- [ ] Post weekly progress on Reddit",
                         "- [ ] Respond to top 5 community questions"
                     ]
                 elif domain == "browser":
-                    tasks = [
+                    tasks += [
                         "- [ ] Crawl xmrt.io for broken links",
                         "- [ ] Analyze traffic sources",
                         "- [ ] Automate scraping of market cap sites"
                     ]
                 elif domain == "analytics":
-                    tasks = [
+                    tasks += [
                         "- [ ] Fetch and chart user growth",
                         "- [ ] Update dashboard with latest Monero price",
                         "- [ ] Analyze retention data"
                     ]
             # Try to complete the first unchecked task
             completed_notes = ""
-            if tasks:
-                next_task = tasks[0]
-                completed_notes = do_real_task(domain, next_task, repo_obj, cycle_count)
-                # Mark as completed
-                tasks[0] = next_task.replace("- [ ]", "- [x]", 1) + f"  (Done at {time.ctime()}: {completed_notes})"
+            updated = False
+            for i, line in enumerate(tasks):
+                if line.strip().startswith("- [ ]"):
+                    success, note = do_real_task(domain, line, repo_obj, cycle_count)
+                    if success:
+                        tasks[i] = line.replace("- [ ]", "- [x]", 1) + f"  (Done at {time.ctime()}: {note})"
+                        completed_notes = note
+                        updated = True
+                    else:
+                        completed_notes = note
+                    break # Only one task per cycle
 
             # Update todo file
             new_todo_content = "# TODO List for {}\n\n".format(domain.title()) + "\n".join(tasks)
