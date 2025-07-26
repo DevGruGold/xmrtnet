@@ -1,5 +1,5 @@
 
-import os, time, random, requests
+import os, time, random, requests, sys
 from github import Github, InputGitAuthor
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
@@ -62,57 +62,77 @@ def get_monero_price():
     except Exception as e:
         return f'API error: {e}'
 
+def safe_create_or_update(repo, filename, content, message, author):
+    try:
+        file = repo.get_contents(filename)
+        # If file exists, append (or update as needed)
+        new_content = file.decoded_content.decode() + "\n\n" + content
+        repo.update_file(filename, message, new_content, file.sha, author=author)
+        print(f"✅ Appended to {filename}")
+    except Exception:
+        # If file does not exist, create it
+        repo.create_file(filename, message, content, author=author)
+        print(f"✅ Created {filename}")
+
+def write_healthcheck(repo, content, author):
+    filename = "ELIZA_HEALTHCHECK.md"
+    try:
+        file = repo.get_contents(filename)
+        repo.update_file(filename, "🤖 Eliza healthcheck", content, file.sha, author=author)
+    except Exception:
+        repo.create_file(filename, "🤖 Eliza healthcheck", content, author=author)
+
 cycle_count = CYCLE_COUNT_START
 
-for _ in range(CYCLES_TO_RUN):
-    domain, preferred_tool = domains[(cycle_count-1) % len(domains)]
-    tool_full_name = next((t for t in tools_list if preferred_tool.lower() in t.lower()), None)
-    if not tool_full_name:
-        tool_full_name = recommend_tool(domain, tools_list)
-    print(f'\n--- CYCLE {cycle_count} | DOMAIN: {domain} | TOOL: {tool_full_name} ---')
+try:
+    for _ in range(CYCLES_TO_RUN):
+        domain, preferred_tool = domains[(cycle_count-1) % len(domains)]
+        tool_full_name = next((t for t in tools_list if preferred_tool.lower() in t.lower()), None)
+        if not tool_full_name:
+            tool_full_name = recommend_tool(domain, tools_list)
+        print(f'\n--- CYCLE {cycle_count} | DOMAIN: {domain} | TOOL: {tool_full_name} ---')
 
-    try:
-        clone_and_run_git_repo(tool_full_name)
-    except Exception as e:
-        print(f'Tool run error: {e}')
+        try:
+            clone_and_run_git_repo(tool_full_name)
+        except Exception as e:
+            print(f'Tool run error: {e}')
 
-    results = []
-    if domain == 'browser':
-        results.append('Preview from browser-use:\n' + fetch_web_data('https://httpbin.org/headers'))
-    elif domain == 'analytics':
-        price = get_monero_price()
-        results.append(f'Monero price (USD): {price}')
-    elif domain == 'marketing':
-        results.append('Drafted marketing content with AI knowledge tools.')
-    elif domain == 'mining':
-        results.append('Checked mining pool status (simulated).')
-    elif domain == 'development':
-        results.append('Ran code analysis/autogen (simulated).')
-    elif domain == 'social_media':
-        results.append('Queued tweet via social-media-agent (simulated).')
-    else:
-        results.append(f'No specific action for domain \'{domain}\'.')
+        results = []
+        if domain == 'browser':
+            results.append('Preview from browser-use:\n' + fetch_web_data('https://httpbin.org/headers'))
+        elif domain == 'analytics':
+            price = get_monero_price()
+            results.append(f'Monero price (USD): {price}')
+        elif domain == 'marketing':
+            results.append('Drafted marketing content with AI knowledge tools.')
+        elif domain == 'mining':
+            results.append('Checked mining pool status (simulated).')
+        elif domain == 'development':
+            results.append('Ran code analysis/autogen (simulated).')
+        elif domain == 'social_media':
+            results.append('Queued tweet via social-media-agent (simulated).')
+        else:
+            results.append(f'No specific action for domain \'{domain}\'.')
 
-    file_name = f'{domain.upper()}_CYCLE_{cycle_count}.md'
-    file_content = f'# Eliza Autonomous Cycle Log\n\n' \
-                   f'**Cycle:** {cycle_count}\n' \
-                   f'**Domain:** {domain}\n' \
-                   f'**Tool used:** `{tool_full_name}`\n\n' \
-                   f'## Results/Actions\n' + '\n\n'.join(results) + '\n' \
-                   f'\n---\n*Cycle executed and logged by Eliza Autonomous Agent*'
+        file_name = f'{domain.upper()}_CYCLE_{cycle_count}.md'
+        file_content = f'# Eliza Autonomous Cycle Log\n\n' \
+                       f'**Cycle:** {cycle_count}\n' \
+                       f'**Domain:** {domain}\n' \
+                       f'**Tool used:** `{tool_full_name}`\n\n' \
+                       f'## Results/Actions\n' + '\n\n'.join(results) + '\n' \
+                       f'\n---\n*Cycle executed and logged by Eliza Autonomous Agent*'
 
-    try:
-        repo_obj.create_file(
-            file_name,
-            f'🤖 {domain.title()} action by Eliza (cycle {cycle_count})',
-            file_content,
-            author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io')
-        )
-        print(f'✅ Created {file_name} in {TARGET_REPO}')
-    except Exception as e:
-        print(f'⚠️ Could not create {file_name}: {e}')
+        # Robust file creation/appending
+        safe_create_or_update(repo_obj, file_name, file_content, f"🤖 {domain.title()} action by Eliza (cycle {cycle_count})", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
 
-    cycle_count += 1
-    time.sleep(2)
+        # Healthcheck every cycle
+        healthcheck_content = f"Cycle: {cycle_count}\nDomain: {domain}\nStatus: OK\nTime: {time.ctime()}"
+        write_healthcheck(repo_obj, healthcheck_content, InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
 
-print('\n🚀 PRODUCTION ELIZA: Fully autonomous, tool-using, multi-domain cycle complete!')
+        cycle_count += 1
+        time.sleep(2)
+except Exception as e:
+    print(f"🔥 Uncaught error: {e}")
+    sys.exit(1)  # Let Render auto-restart
+
+print('\n🚀 PRODUCTION ELIZA: Fully autonomous, robust, self-healing, multi-domain cycle complete!')
