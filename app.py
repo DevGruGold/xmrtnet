@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Mobile-First CSS
+# Mobile-First CSS (keeping the beautiful styling from before)
 st.markdown('''
 <style>
     /* Hide Streamlit default elements for cleaner mobile look */
@@ -159,6 +159,23 @@ st.markdown('''
         font-size: 0.9rem;
     }
     
+    /* Quick action buttons - different colors for different agents */
+    .governance-btn {
+        background: linear-gradient(135deg, #28a745, #20c997) !important;
+    }
+    
+    .mining-btn {
+        background: linear-gradient(135deg, #fd7e14, #ffc107) !important;
+    }
+    
+    .treasury-btn {
+        background: linear-gradient(135deg, #6f42c1, #e83e8c) !important;
+    }
+    
+    .guide-btn {
+        background: linear-gradient(135deg, #17a2b8, #6610f2) !important;
+    }
+    
     /* Sidebar styling for mobile */
     .css-1d391kg {
         padding-top: 1rem;
@@ -223,6 +240,44 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
+# Function to simulate agent interaction
+def ask_agent_question(question, agent_name):
+    """Add a question to chat as if user asked it"""
+    # Add user question
+    st.session_state.messages.append({"role": "user", "content": question})
+    
+    # Show thinking and get response
+    try:
+        response = requests.post(
+            "https://xmrtnet.onrender.com/api/eliza",
+            json={"message": question},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            agent_response = response.json().get("response", "I'm having trouble responding right now.")
+            source = response.json().get("source", "unknown")
+            
+            st.session_state.messages.append({
+                "role": "assistant", 
+                "content": agent_response,
+                "agent": agent_name,
+                "source": source
+            })
+        else:
+            st.session_state.messages.append({
+                "role": "assistant",
+                "content": "I'm experiencing technical difficulties. Please try again.",
+                "agent": agent_name
+            })
+            
+    except Exception as e:
+        st.session_state.messages.append({
+            "role": "assistant",
+            "content": "Connection error. Please check your internet and try again.",
+            "agent": agent_name
+        })
+
 # Header
 st.markdown('''
 <div class="main-header">
@@ -265,7 +320,7 @@ st.markdown("## 💬 Chat with XMRT Agents")
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hello! I'm Eliza, your XMRT DAO assistant. Ask me about DAOs, governance, mining, or decentralized systems!", "agent": "Eliza"}
+        {"role": "assistant", "content": "Hello! I'm Eliza, your XMRT DAO assistant. Ask me about DAOs, governance, mining, or decentralized systems! Try the quick action buttons below to see different agents in action.", "agent": "Eliza"}
     ]
 
 # Chat container
@@ -283,7 +338,6 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # Mobile-optimized input form
 with st.form("chat_form", clear_on_submit=True):
-    # Stack inputs vertically on mobile
     user_input = st.text_input("💬 Ask anything...", placeholder="e.g., How does DAO voting work?")
     
     col1, col2 = st.columns([2, 1])
@@ -294,42 +348,7 @@ with st.form("chat_form", clear_on_submit=True):
         send_button = st.form_submit_button("Send 🚀", use_container_width=True)
 
 if send_button and user_input:
-    # Add user message
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    
-    # Show thinking indicator
-    with st.spinner(f"🤔 {selected_agent} is thinking..."):
-        try:
-            response = requests.post(
-                "https://xmrtnet.onrender.com/api/eliza",
-                json={"message": user_input},
-                timeout=30
-            )
-            
-            if response.status_code == 200:
-                agent_response = response.json().get("response", "I'm having trouble responding right now.")
-                source = response.json().get("source", "unknown")
-                
-                st.session_state.messages.append({
-                    "role": "assistant", 
-                    "content": agent_response,
-                    "agent": selected_agent,
-                    "source": source
-                })
-            else:
-                st.session_state.messages.append({
-                    "role": "assistant",
-                    "content": "I'm experiencing technical difficulties. Please try again.",
-                    "agent": selected_agent
-                })
-                
-        except Exception as e:
-            st.session_state.messages.append({
-                "role": "assistant",
-                "content": f"Connection error. Please check your internet and try again.",
-                "agent": selected_agent
-            })
-    
+    ask_agent_question(user_input, selected_agent)
     st.rerun()
 
 # Mobile metrics section
@@ -372,28 +391,55 @@ if st.button("📊 Show DAO Metrics", use_container_width=True):
         </div>
         ''', unsafe_allow_html=True)
 
-# Quick actions
-st.markdown("### 🎯 Quick Actions")
+# Smart Quick Actions - Each button asks agent-specific questions
+st.markdown("### 🎯 Quick Actions - Try Our Specialized Agents!")
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button("🗳️ View Proposals", use_container_width=True):
-        st.info("🚀 Governance proposals coming soon!")
+    if st.button("🗳️ Governance Demo", use_container_width=True, help="Ask the Governance Agent about DAO voting"):
+        ask_agent_question("How does DAO governance work? Explain the voting process, proposal creation, and how token holders can participate in decision-making.", "Governance Agent")
+        st.rerun()
     
-    if st.button("💰 Treasury Info", use_container_width=True):
-        st.info("📊 Treasury analytics coming soon!")
+    if st.button("💰 Treasury Analysis", use_container_width=True, help="Ask the Treasury Agent about DAO finances"):
+        ask_agent_question("Explain how DAO treasuries work. How are funds managed, what are the typical revenue streams, and how are expenditures approved?", "Treasury Agent")
+        st.rerun()
 
 with col2:
-    if st.button("⛏️ Mining Status", use_container_width=True):
-        st.info("⚡ Mining dashboard coming soon!")
+    if st.button("⛏️ Mining Insights", use_container_width=True, help="Ask the Mining Agent about XMRT mining"):
+        ask_agent_question("Tell me about XMRT mining. How does it work on mobile devices, what makes it resilient during internet outages, and how can I start mining?", "Mining Agent")
+        st.rerun()
     
-    if st.button("📚 DAO Guide", use_container_width=True):
-        st.info("📖 Educational resources coming soon!")
+    if st.button("📚 DAO Education", use_container_width=True, help="Ask Eliza for DAO basics"):
+        ask_agent_question("I'm new to DAOs. Can you explain what a DAO is, how it differs from traditional organizations, and what are the main benefits and challenges?", "Eliza")
+        st.rerun()
+
+# Additional specialized questions
+st.markdown("### 🚀 Advanced Topics")
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("🔗 Cross-Chain Features", use_container_width=True):
+        ask_agent_question("How does XMRT work across different blockchains? Explain the cross-chain capabilities and interoperability features.", "DAO Agent")
+        st.rerun()
+        
+    if st.button("🛡️ Security & Resilience", use_container_width=True):
+        ask_agent_question("What makes XMRT resilient during network failures? How does the security model work when traditional internet infrastructure fails?", "Mining Agent")
+        st.rerun()
+
+with col2:
+    if st.button("📈 Tokenomics Deep Dive", use_container_width=True):
+        ask_agent_question("Explain XMRT tokenomics in detail. How are tokens distributed, what are the incentive mechanisms, and how does the economic model sustain the network?", "Treasury Agent")
+        st.rerun()
+        
+    if st.button("🌐 Future Roadmap", use_container_width=True):
+        ask_agent_question("What's the future roadmap for XMRT DAO? What are the upcoming features, governance improvements, and technical developments planned?", "Governance Agent")
+        st.rerun()
 
 # Footer
 st.markdown('''
 <div class="footer">
     <p>🌐 <strong>XMRT DAO</strong> - Building the Decentralized Future</p>
     <p>Powered by Autonomous AI Agents • Resilient Mining Network • Community Governance</p>
+    <p><small>💡 Try the quick action buttons above to see our specialized agents in action!</small></p>
 </div>
 ''', unsafe_allow_html=True)
