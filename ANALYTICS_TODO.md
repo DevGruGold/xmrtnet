@@ -1,3 +1,5 @@
 # TODO List for Analytics
 
-- [x] Analyze retention data  (Done at Sat Jul 26 22:21:51 2025: No actionable real task found.)
+- [x] Fetch and chart user growth  (Done at Sat Jul 26 22:22:19 2025: No actionable real task found.)
+- [ ] Update dashboard with latest Monero price
+- [ ] Analyze retention data
