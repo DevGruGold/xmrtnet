@@ -55,18 +55,6 @@ def write_file(repo, filename, content, message, author, sha=None):
     else:
         repo.create_file(filename, message, content, author=author)
 
-def add_new_task(domain, repo_obj, task_text):
-    todo_file = f"{domain.upper()}_TODO.md"
-    todo_content, todo_sha = read_file_or_empty(repo_obj, todo_file)
-    tasks = todo_content.splitlines()
-    # Add at the end if not already present
-    if not any(task_text in t for t in tasks):
-        tasks.append(f"- [ ] {task_text}")
-        new_todo_content = "\n".join(tasks)
-        write_file(repo_obj, todo_file, new_todo_content, f"🤖 Add new task for {domain}", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'), sha=todo_sha)
-        return True
-    return False
-
 def get_monero_price():
     url = 'https://api.coingecko.com/api/v3/simple/price?ids=monero&vs_currencies=usd'
     try:
@@ -120,7 +108,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         except Exception:
             repo_obj.create_file(filename, "🤖 Create market data", content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
             return True, f"Recorded real Monero price: {price} in MARKET_DATA.md"
-    # Add more as needed for browser/social_media...
+    # Add more as needed
     return False, "No actionable real task found."
 
 cycle_count = CYCLE_COUNT_START
@@ -136,7 +124,7 @@ while True:
             for line in lines:
                 if line.strip().startswith("- [ ]") or line.strip().startswith("- [x]"):
                     tasks.append(line)
-            # If no tasks, auto-add new tasks (never "no actionable task found")
+            # If no tasks, auto-add new tasks
             default_tasks = {
                 "development": [
                     "Review and refactor main smart contracts",
@@ -175,7 +163,7 @@ while True:
             if not any(line.strip().startswith("- [ ]") for line in tasks):
                 for t in default_tasks.get(domain, []):
                     tasks.append(f"- [ ] {t}")
-            # Try to complete the first unchecked task
+
             completed_notes = ""
             updated = False
             for i, line in enumerate(tasks):
@@ -187,15 +175,12 @@ while True:
                         updated = True
                         break # Only one task per cycle
                     else:
-                        # If not done, leave unchecked and add back to the file (no simulation, no fake done)
-                        completed_notes = note
+                        completed_notes = note  # but DO NOT mark as done
                         break
 
-            # Update todo file
             new_todo_content = "# TODO List for {}\n\n".format(domain.title()) + "\n".join(tasks)
             write_file(repo_obj, todo_file, new_todo_content, f"🤖 Update {domain.title()} TODO (cycle {cycle_count})", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'), sha=todo_sha)
             
-            # Log what was done this cycle
             log_file = f"{domain.upper()}_CYCLE_{cycle_count}.md"
             log_content = f"# {domain.title()} Cycle {cycle_count}\n\nAccomplished: {completed_notes}\n\nCurrent TODO List:\n\n" + "\n".join(tasks)
             safe_create_or_update(repo_obj, log_file, log_content, f"🤖 {domain.title()} action by Eliza (cycle {cycle_count})", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
