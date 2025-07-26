@@ -1,7 +1,6 @@
 # TODO List for Development
 
-- [x] Review and refactor main smart contracts  (Done at Sat Jul 26 22:40:47 2025: No actionable real task found.)
-- [ ] Write/expand unit tests
+- [x] Write/expand unit tests  (Done at Sat Jul 26 22:41:17 2025: Logged unit test expansion in DEVELOPMENT_TEST_PLAN.md)
 - [ ] Check for dependency vulnerabilities
 - [ ] Audit recent PRs
 - [ ] Optimize gas usage
