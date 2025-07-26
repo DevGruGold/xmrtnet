@@ -1,7 +1,6 @@
 # TODO List for Development
 
-- [x] Review and refactor main smart contracts  (Done at Sat Jul 26 22:12:53 2025: Simulated completion: - [ ] Review and refactor main smart contracts)
-- [ ] Write/expand unit tests
+- [x] Write/expand unit tests  (Done at Sat Jul 26 22:13:20 2025: Located test suite, added TODO for more coverage in tests/test_xmrt.py)
 - [ ] Check for dependency vulnerabilities
 - [ ] Audit recent PRs
 - [ ] Optimize gas usage
