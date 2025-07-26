@@ -1,3 +1,5 @@
 # TODO List for Browser
 
-- [x] Automate scraping of market cap sites  (Done at Sat Jul 26 22:38:41 2025: No actionable real task found.)
+- [x] Crawl xmrt.io for broken links  (Done at Sat Jul 26 22:39:14 2025: No actionable real task found.)
+- [ ] Analyze traffic sources
+- [ ] Automate scraping of market cap sites
