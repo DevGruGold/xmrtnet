@@ -6,7 +6,7 @@ GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_USER = os.getenv('GITHUB_USER', 'DevGruGold')
 TARGET_REPO = os.getenv('TARGET_REPO', 'xmrtnet')
 CYCLE_COUNT_START = 1
-CYCLES_TO_RUN = 5  # Increase for forever
+CYCLES_TO_RUN = 5  # Or higher for prod
 WORKDIR = '/tmp/eliza_tools'
 
 g = Github(GITHUB_TOKEN)
@@ -34,12 +34,16 @@ def recommend_tool(domain, tools_list):
             return tool
     return random.choice(tools_list)
 
-def clone_and_run_git_repo(tool_full_name, command=None):
+def clone_and_update_git_repo(tool_full_name, command=None):
     url = f'https://github.com/{tool_full_name}.git'
     local_path = os.path.join(WORKDIR, tool_full_name.split('/')[-1])
     os.makedirs(WORKDIR, exist_ok=True)
     if not os.path.exists(local_path):
+        print(f'Cloning {tool_full_name}...')
         os.system(f'git clone {url} {local_path}')
+    else:
+        print(f'Updating {tool_full_name}...')
+        os.system(f'cd {local_path} && git pull')
     if command:
         print(f'Running command in {local_path}:\n{command}')
         os.chdir(local_path)
@@ -91,9 +95,9 @@ while True:  # Run forever
                 tool_full_name = recommend_tool(domain, tools_list)
             print(f'\n--- CYCLE {cycle_count} | DOMAIN: {domain} | TOOL: {tool_full_name} ---')
             try:
-                clone_and_run_git_repo(tool_full_name)
+                clone_and_update_git_repo(tool_full_name)
             except Exception as e:
-                print(f'Tool run error: {e}')
+                print(f'Tool sync error: {e}')
 
             results = []
             if domain == 'browser':
@@ -138,4 +142,4 @@ while True:  # Run forever
             time.sleep(60)
         # Never exit; always recover and continue
 
-print('\n🚀 UNSTOPPABLE ELIZA: Fully autonomous, robust, self-healing, multi-domain cycle complete!')
+print('\n🚀 UNSTOPPABLE ELIZA: Fully autonomous, robust, self-healing, resource-smart, multi-domain cycle complete!')
