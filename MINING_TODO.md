@@ -1,3 +1,5 @@
 # TODO List for Mining
 
-- [x] Compare mining profitability vs. competitors  (Done at Sat Jul 26 22:09:04 2025: Simulated completion: - [ ] Compare mining profitability vs. competitors)
+- [x] Check mining pool hashrate  (Done at Sat Jul 26 22:09:31 2025: Simulated completion: - [ ] Check mining pool hashrate)
+- [ ] Update pool payout script
+- [ ] Compare mining profitability vs. competitors
