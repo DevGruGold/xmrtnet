@@ -1,6 +1,6 @@
 services:
-  # Python Autonomous Eliza Brain - 24/7 AI Developer
-  - type: web
+  # Python Autonomous Eliza Brain - Background Worker (NOT web service)
+  - type: worker
     name: eliza-autonomous-brain
     env: python
     plan: starter
