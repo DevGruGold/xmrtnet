@@ -1,4 +1,3 @@
 # TODO List for Mining
 
-- [x] Update pool payout script  (Done at Sat Jul 26 22:14:00 2025: Simulated completion: - [ ] Update pool payout script)
-- [ ] Compare mining profitability vs. competitors
+- [x] Compare mining profitability vs. competitors  (Done at Sat Jul 26 22:14:26 2025: Simulated completion: - [ ] Compare mining profitability vs. competitors)
