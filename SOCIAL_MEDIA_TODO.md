@@ -1,3 +1,5 @@
 # TODO List for Social_Media
 
-- [x] Respond to top 5 community questions  (Done at Sat Jul 26 23:04:39 2025: No actionable real task found.)
+- [x] Schedule next Discord AMA  (Done at Sat Jul 26 23:05:10 2025: No actionable real task found.)
+- [ ] Post weekly progress on Reddit
+- [ ] Respond to top 5 community questions
