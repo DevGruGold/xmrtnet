@@ -1,3 +1,5 @@
 # TODO List for Browser
 
-- [x] Automate scraping of market cap sites  (Done at Sat Jul 26 22:16:19 2025: Simulated completion: - [ ] Automate scraping of market cap sites)
+- [x] Crawl xmrt.io for broken links  (Done at Sat Jul 26 22:16:45 2025: Simulated completion: - [ ] Crawl xmrt.io for broken links)
+- [ ] Analyze traffic sources
+- [ ] Automate scraping of market cap sites
