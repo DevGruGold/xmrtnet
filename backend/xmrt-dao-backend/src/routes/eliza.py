@@ -29,6 +29,48 @@ MEMORY_CONFIG = {
     'similarity_threshold': 0.7
 }
 
+
+
+# OpenRouter fallback configuration
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+
+def get_ai_response(messages, user_id="default"):
+    """Get AI response with OpenAI primary, OpenRouter fallback"""
+    try:
+        # Try OpenAI first
+        if openai.api_key:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=messages,
+                temperature=0.7,
+                max_tokens=500
+            )
+            return response.choices[0].message.content
+    except Exception as e:
+        print(f"OpenAI failed: {e}")
+    
+    try:
+        # Fallback to OpenRouter
+        if OPENROUTER_API_KEY:
+            headers = {
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            }
+            data = {
+                "model": "openchat/openchat-3.5-0106",
+                "messages": messages,
+                "temperature": 0.7
+            }
+            response = requests.post("https://openrouter.ai/api/v1/chat/completions", 
+                                   headers=headers, json=data, timeout=30)
+            if response.status_code == 200:
+                return response.json()['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"OpenRouter failed: {e}")
+    
+    return "Sorry, AI services are temporarily unavailable. Please try again later."
+
+
 # Enhanced Eliza system prompt with cross-chain and ZK capabilities
 ELIZA_SYSTEM_PROMPT = """
 You are Eliza, the advanced AI brain behind XMRT DAO. You are a sophisticated multi-chain AI agent with the following enhanced capabilities:
