@@ -10,8 +10,8 @@ import time
 from typing import Dict, Any, List, Optional
 
 # Import memory manager
-from src.utils.memory_manager import memory_manager
-from src.models.memory import MemoryType, AssociationType
+# from src.utils.memory_manager import memory_manager
+# from src.models.memory import MemoryType, AssociationType
 
 load_dotenv()
 
@@ -147,19 +147,10 @@ class EnhancedElizaAgent:
             })
             
             # Store user message as a memory
-            self.memory_manager.store_memory(
-                user_id='eliza_user',  # Placeholder user ID
-                content=message,
-                memory_type=MemoryType.CONVERSATION,
-                metadata={'message_type': message_type, 'role': 'user'}
-            )
+            self.# memory disabled
 
             # Retrieve relevant memories
-            relevant_memories = self.memory_manager.search_memories(
-                user_id='eliza_user',  # Placeholder user ID
-                query=message,
-                limit=5
-            )
+            relevant_memories = self.# memory disabled
             
             # Enhance context based on message type and relevant memories
             enhanced_context = self._enhance_context(message_type, user_context, relevant_memories)
@@ -206,12 +197,7 @@ class EnhancedElizaAgent:
             })
 
             # Store Eliza's response as a memory
-            self.memory_manager.store_memory(
-                user_id='eliza_user',  # Placeholder user ID
-                content=eliza_response,
-                memory_type=MemoryType.CONVERSATION,
-                metadata={'message_type': message_type, 'role': 'assistant', 'autonomous_actions': autonomous_actions}
-            )
+            self.# memory disabled
             
             return {
                 'success': True,
@@ -753,12 +739,7 @@ def search_memories():
                     'error': f'Invalid memory type: {memory_type}'
                 }), 400
         
-        memories = memory_manager.search_memories(
-            user_id=user_id,
-            query=query,
-            memory_type=memory_type_enum,
-            limit=limit
-        )
+        memories = # memory disabled
         
         return jsonify({
             'success': True,
@@ -801,12 +782,7 @@ def store_memory():
                 'error': f'Invalid memory type: {memory_type}'
             }), 400
         
-        memory_id = memory_manager.store_memory(
-            user_id=user_id,
-            content=content,
-            memory_type=memory_type_enum,
-            metadata=metadata
-        )
+        memory_id = # memory disabled
         
         return jsonify({
             'success': True,
@@ -847,10 +823,7 @@ def get_memory_associations():
                     'error': f'Invalid association type: {association_type}'
                 }), 400
         
-        associations = memory_manager.get_memory_associations(
-            memory_id=memory_id,
-            association_type=association_type_enum
-        )
+        associations = # memory disabled
         
         return jsonify({
             'success': True,
@@ -874,7 +847,7 @@ def get_memory_analytics():
         user_id = request.args.get('user_id', 'eliza_user')
         days = request.args.get('days', 30, type=int)
         
-        analytics = memory_manager.get_memory_analytics(user_id=user_id, days=days)
+        analytics = # memory disabled
         
         return jsonify({
             'success': True,
@@ -908,12 +881,7 @@ def prune_memories():
                     'error': f'Invalid memory type: {memory_type}'
                 }), 400
         
-        result = memory_manager.prune_memories(
-            user_id=user_id,
-            days_old=days_old,
-            memory_type=memory_type_enum,
-            dry_run=dry_run
-        )
+        result = # memory disabled
         
         return jsonify({
             'success': True,
