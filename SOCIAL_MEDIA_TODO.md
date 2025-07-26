@@ -1,5 +1,4 @@
 # TODO List for Social_Media
 
-- [x] Schedule next Discord AMA  (Done at Sat Jul 26 22:09:53 2025: Simulated completion: - [ ] Schedule next Discord AMA)
-- [ ] Post weekly progress on Reddit
+- [x] Post weekly progress on Reddit  (Done at Sat Jul 26 22:10:21 2025: Simulated completion: - [ ] Post weekly progress on Reddit)
 - [ ] Respond to top 5 community questions
