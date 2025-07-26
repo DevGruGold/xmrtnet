@@ -1,4 +1,4 @@
-Cycle: 13
-Domain: development
+Cycle: 14
+Domain: marketing
 Status: OK
-Time: Sat Jul 26 21:52:59 2025
+Time: Sat Jul 26 21:53:04 2025
