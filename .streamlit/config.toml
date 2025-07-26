@@ -1,0 +1,9 @@
+[server]
+port = $PORT
+address = 0.0.0.0
+
+[theme]
+primaryColor = "#667eea"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f0f2f6"
+textColor = "#262730"
