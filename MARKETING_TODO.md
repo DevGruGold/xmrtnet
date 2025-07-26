@@ -1,3 +1,6 @@
 # TODO List for Marketing
 
-- [x] Analyze Telegram engagement stats  (Done at Sat Jul 26 22:17:25 2025: Simulated completion: - [ ] Analyze Telegram engagement stats)
+- [x] Draft new Twitter thread on XMRT privacy  (Done at Sat Jul 26 22:17:41 2025: Drafted and logged a Twitter thread in MARKETING_IDEAS.md)
+- [ ] Update website with latest milestones
+- [ ] Prepare Q3 newsletter
+- [ ] Analyze Telegram engagement stats
