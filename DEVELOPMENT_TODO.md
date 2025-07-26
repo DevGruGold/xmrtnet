@@ -1,6 +1,5 @@
 # TODO List for Development
 
-- [x] Write/expand unit tests  (Done at Sat Jul 26 22:17:21 2025: Located test suite, added TODO for more coverage in tests/test_xmrt.py)
-- [ ] Check for dependency vulnerabilities
+- [x] Check for dependency vulnerabilities  (Done at Sat Jul 26 22:17:35 2025: No actionable real task found.)
 - [ ] Audit recent PRs
 - [ ] Optimize gas usage
