@@ -21,6 +21,17 @@ domains = [
     ('analytics', 'xmrt-storm-pr-engine'),
 ]
 
+
+def ensure_directory_exists(repo_obj, path):
+    """Ensure directory exists by creating a placeholder file if needed"""
+    try:
+        # Try to get directory contents
+        repo_obj.get_contents(path)
+    except:
+        # Directory doesn't exist, create it with a README
+        readme_content = f"# {path.title()} Logs\n\nThis directory contains Eliza's {path.split('/')[-1]} cycle logs.\n"
+        repo_obj.create_file(f"{path}/README.md", f"📁 Create {path} directory", readme_content, author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
+
 def get_tools(g, user):
     forked = [repo.full_name for repo in g.get_user(user).get_repos() if repo.fork]
     starred = [repo.full_name for repo in g.get_user(user).get_starred()]
@@ -203,7 +214,7 @@ while True:
     try:
         for _ in range(CYCLES_TO_RUN):
             domain, preferred_tool = domains[(cycle_count-1) % len(domains)]
-            todo_file = f"{domain.upper()}_TODO.md"
+            todo_file = f"logs/{domain.lower()}/{domain.upper()}_TODO.md"
             todo_content, todo_sha = read_file_or_empty(repo_obj, todo_file)
             tasks = []
             lines = todo_content.splitlines()
@@ -267,7 +278,8 @@ while True:
             new_todo_content = "# TODO List for {}\n\n".format(domain.title()) + "\n".join(tasks)
             write_file(repo_obj, todo_file, new_todo_content, f"🤖 Update {domain.title()} TODO (cycle {cycle_count})", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'), sha=todo_sha)
             
-            log_file = f"{domain.upper()}_CYCLE_{cycle_count}.md"
+            ensure_directory_exists(repo_obj, f"logs/{domain.lower()}")
+            log_file = f"logs/{domain.lower()}/{domain.upper()}_CYCLE_{cycle_count}.md"
             log_content = f"# {domain.title()} Cycle {cycle_count}\n\nAccomplished: {completed_notes}\n\nCurrent TODO List:\n\n" + "\n".join(tasks)
             safe_create_or_update(repo_obj, log_file, log_content, f"🤖 {domain.title()} action by Eliza (cycle {cycle_count})", InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io'))
 
