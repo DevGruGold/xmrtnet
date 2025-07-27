@@ -1,3 +1,4 @@
+import subprocess
 #!/usr/bin/env python3
 """
 🚀 ELIZA SINGLETON MANAGER - PREVENTS MULTIPLE INSTANCES
@@ -18,7 +19,7 @@ import os
 import sys
 import time
 import signal
-import psutil
+# import psutil  # Disabled for deployment compatibility
 import threading
 import logging
 from pathlib import Path
@@ -46,28 +47,36 @@ class ElizaSingletonManager:
         self.is_running = False
         
     def check_existing_instances(self):
-        """Check for existing Eliza processes"""
-        logger.info("🔍 Checking for existing Eliza instances...")
-        
+        """Check for existing Eliza processes using standard library."""
+        logger.info("🔍 Checking for existing Eliza instances (std-lib)...")
         existing_processes = []
-        
+        component_name_to_check = getattr(self, 'component_name', 'Enhanced_Eliza_Central_Component')
+        my_pid = os.getpid()
         try:
-            for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
-                try:
-                    cmdline = ' '.join(proc.info['cmdline'] or [])
-                    if self.component_name in cmdline or 'Enhanced_Eliza' in cmdline:
-                        existing_processes.append({
-                            'pid': proc.info['pid'],
-                            'name': proc.info['name'],
-                            'cmdline': cmdline
-                        })
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    continue
-                    
-        except Exception as e:
-            logger.warning(f"Error checking processes: {e}")
-            
-        logger.info(f"📊 Found {len(existing_processes)} existing Eliza processes")
+            # Use pgrep, which is common on Linux systems like Render
+            cmd = ['pgrep', '-f', component_name_to_check]
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                pids = result.stdout.strip().split('
+')
+                for pid_str in pids:
+                    if pid_str and pid_str.isdigit() and int(pid_str) != my_pid:
+                        existing_processes.append({'pid': int(pid_str), 'cmdline': 'pgrep found process'})
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            logger.warning("⚠️ 'pgrep' not found or timed out. Using 'ps' as a fallback.")
+            try:
+                # Fallback to 'ps' if pgrep is not available
+                cmd = ['ps', 'aux']
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
+                for line in result.stdout.splitlines():
+                    if component_name_to_check in line and 'python' in line:
+                        parts = line.split()
+                        if len(parts) > 1 and parts[1].isdigit() and int(parts[1]) != my_pid:
+                            existing_processes.append({'pid': int(parts[1]), 'cmdline': line})
+            except Exception as ps_e:
+                logger.error(f"❌ Failed to check processes with 'ps': {ps_e}")
+        
+        logger.info(f"📊 Found {len(existing_processes)} other Eliza processes.")
         return existing_processes
         
     def kill_existing_instances(self):
