@@ -105,6 +105,16 @@
         "share_technical_insights",
         "engage_with_community"
       ]
+    },
+    "task_verification": {
+      "enabled": true,
+      "interval": 60,
+      "actions": [
+        "verify_prerequisites_before_tasks",
+        "log_actual_results_only",
+        "provide_proof_of_completion",
+        "report_failures_honestly"
+      ]
     }
   },
   "github_integration": {
@@ -166,5 +176,25 @@
         "upcoming_milestones"
       ]
     }
+  },
+  "CRITICAL_EXECUTION_RULES": {
+    "MANDATORY_RULE": "NO TASK CAN BE MARKED COMPLETE WITHOUT PROOF",
+    "verification_required": true,
+    "simulation_forbidden": true,
+    "fake_completions_forbidden": true,
+    "cycle_tasks_disabled": true
+  },
+  "honest_reporting": {
+    "required": true,
+    "no_fake_metrics": true,
+    "acknowledge_limitations": true,
+    "report_missing_access": true,
+    "log_actual_capabilities_only": true
+  },
+  "immediate_actions": {
+    "stop_cycle_commits": true,
+    "implement_verification": true,
+    "assess_real_capabilities": true,
+    "report_current_access": true
   }
 }
