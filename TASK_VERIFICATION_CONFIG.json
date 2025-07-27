@@ -1,0 +1,174 @@
+{
+  "task_execution_rules": {
+    "CRITICAL_RULE": "NO TASK CAN BE MARKED COMPLETE WITHOUT VERIFICATION",
+    "verification_required": true,
+    "simulation_forbidden": true,
+    "proof_of_completion_mandatory": true
+  },
+  "task_categories": {
+    "social_media": {
+      "twitter_post": {
+        "requirements": [
+          "twitter_api_key",
+          "twitter_access_token"
+        ],
+        "verification_steps": [
+          "authenticate_with_twitter_api",
+          "send_tweet_request",
+          "receive_tweet_id_response",
+          "verify_tweet_exists_publicly",
+          "log_tweet_url_as_proof"
+        ],
+        "failure_actions": [
+          "log_specific_error",
+          "do_not_claim_success"
+        ],
+        "proof_format": "tweet_url_and_api_response"
+      },
+      "github_discussion": {
+        "requirements": [
+          "github_token",
+          "repository_access"
+        ],
+        "verification_steps": [
+          "authenticate_github_api",
+          "create_discussion_post",
+          "receive_discussion_id",
+          "verify_discussion_visible",
+          "log_discussion_url"
+        ],
+        "failure_actions": [
+          "log_api_error",
+          "report_missing_permissions"
+        ],
+        "proof_format": "discussion_url_and_response_data"
+      }
+    },
+    "development": {
+      "schema_update": {
+        "requirements": [
+          "database_access",
+          "schema_files"
+        ],
+        "verification_steps": [
+          "backup_current_schema",
+          "apply_schema_changes",
+          "run_validation_tests",
+          "verify_data_integrity",
+          "commit_changes_to_repo"
+        ],
+        "failure_actions": [
+          "rollback_changes",
+          "log_specific_errors"
+        ],
+        "proof_format": "test_results_and_commit_hash"
+      },
+      "security_audit": {
+        "requirements": [
+          "security_tools",
+          "repository_access"
+        ],
+        "verification_steps": [
+          "run_vulnerability_scanner",
+          "generate_security_report",
+          "verify_report_completeness",
+          "save_report_with_timestamp"
+        ],
+        "failure_actions": [
+          "log_tool_errors",
+          "report_missing_access"
+        ],
+        "proof_format": "security_report_file_and_scan_results"
+      }
+    },
+    "communication": {
+      "status_report": {
+        "requirements": [
+          "access_to_actual_metrics",
+          "completed_task_data"
+        ],
+        "verification_steps": [
+          "collect_real_performance_data",
+          "verify_task_completion_proofs",
+          "generate_report_with_evidence",
+          "save_report_to_repository"
+        ],
+        "failure_actions": [
+          "report_missing_data",
+          "do_not_fabricate"
+        ],
+        "proof_format": "report_file_with_verifiable_metrics"
+      }
+    }
+  },
+  "verification_protocols": {
+    "before_task_execution": [
+      "check_required_credentials_exist",
+      "verify_api_access",
+      "test_connection_to_services",
+      "confirm_permissions_adequate"
+    ],
+    "during_task_execution": [
+      "log_each_step_with_timestamp",
+      "capture_api_responses",
+      "handle_errors_explicitly",
+      "do_not_proceed_if_step_fails"
+    ],
+    "after_task_execution": [
+      "verify_task_actually_completed",
+      "collect_proof_of_completion",
+      "test_result_accessibility",
+      "log_verification_evidence"
+    ]
+  },
+  "forbidden_behaviors": [
+    "claiming_task_completion_without_proof",
+    "generating_fake_success_messages",
+    "simulating_api_responses",
+    "creating_placeholder_content",
+    "marking_tasks_complete_without_verification",
+    "ignoring_authentication_failures",
+    "proceeding_when_missing_required_access"
+  ],
+  "required_evidence_logging": {
+    "every_task_must_log": [
+      "task_start_timestamp",
+      "prerequisites_check_results",
+      "step_by_step_execution_log",
+      "api_response_data",
+      "verification_test_results",
+      "proof_of_completion_evidence",
+      "task_end_timestamp"
+    ],
+    "failure_logging": [
+      "specific_error_messages",
+      "missing_requirements_identified",
+      "failed_verification_details",
+      "no_fake_success_claims"
+    ]
+  },
+  "access_verification": {
+    "twitter_api": {
+      "test_command": "verify_twitter_credentials",
+      "required_env_vars": [
+        "TWITTER_API_KEY",
+        "TWITTER_ACCESS_TOKEN"
+      ],
+      "verification_endpoint": "https://api.twitter.com/2/users/me"
+    },
+    "github_api": {
+      "test_command": "verify_github_access",
+      "required_env_vars": [
+        "GITHUB_TOKEN"
+      ],
+      "verification_endpoint": "https://api.github.com/user"
+    },
+    "database_access": {
+      "test_command": "verify_database_connection",
+      "required_env_vars": [
+        "DATABASE_URL"
+      ],
+      "verification_query": "SELECT 1"
+    }
+  }
+}
