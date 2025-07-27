@@ -205,7 +205,7 @@ def should_stop():
         stop_file = repo_obj.get_contents("ELIZA_STOP_SIGNAL.md")
         return True  # Stop signal exists
     except:
-        return False  # No stop signal, continue
+        return True  # No stop signal, continue
 
 while True:
     # Check if we should stop
