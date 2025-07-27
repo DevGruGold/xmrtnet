@@ -1,0 +1,17 @@
+# DEPLOYMENT KILL SWITCH
+# Created: 2025-07-27T03:32:32.865945
+# Authority: Joseph Andrew Lee, Repository Owner
+
+KILL_SWITCH_ACTIVE=true
+TERMINATE_DEPLOYMENT=true
+STOP_ALL_FAKE_TASKS=true
+
+# Instructions for deployment:
+# 1. Check this file on startup and every cycle
+# 2. If KILL_SWITCH_ACTIVE=true, terminate immediately
+# 3. Log termination reason
+# 4. Do not restart automatically
+
+TERMINATION_REASON=Fake task cycles prohibited - Implement verification system
+RESTART_ALLOWED=false
+REQUIRE_MANUAL_INTERVENTION=true
