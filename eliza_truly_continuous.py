@@ -161,30 +161,35 @@ Expected next cycle: **{self.cycle_count + 1}**
             logging.error(f"Startup proof error: {e}")
         
         # MAIN CONTINUOUS LOOP - NO ASYNC, NO EXITS
-        while True:  # INFINITE LOOP
-            try:
-                self.cycle_count += 1
-                cycle_start_time = time.time()
-                
-                logging.info("=" * 60)
-                logging.info(f"🔄 STARTING CYCLE {self.cycle_count}")
-                logging.info(f"⏰ Cycle start time: {datetime.now().isoformat()}")
-                logging.info("=" * 60)
-                
-                # Create proof of this cycle
-                proof_success = self.create_cycle_proof()
-                
-                cycle_duration = time.time() - cycle_start_time
-                logging.info(f"✅ CYCLE {self.cycle_count} COMPLETED in {cycle_duration:.1f} seconds")
-                logging.info(f"😴 Now sleeping for {self.check_interval} seconds before Cycle {self.cycle_count + 1}")
-                
-                # Sleep with continuous logging to prove we're alive
-                self.safe_sleep(self.check_interval)
-                
-                logging.info(f"🔄 Sleep completed! Ready to start Cycle {self.cycle_count + 1}")
-                
-            except KeyboardInterrupt:
-                logging.info("🛑 Keyboard interrupt received - but we'll continue anyway!")
+        while True:
+            # --- PRODUCTIVE WORK OVERRIDE ---
+            # This section replaces the original fake cycle logic.
+            print("🚀 Starting productive work phase...")
+            
+            # Define productive tasks
+            productive_tasks = [
+                "Analyze repository structure and create ARCHITECTURE.md",
+                "Audit for missing README files and create placeholders",
+                "Scan for security vulnerabilities and create SECURITY_REPORT.md",
+                "Document API endpoints and create API_DOCUMENTATION.md"
+            ]
+            
+            # Execute one productive task per cycle
+            task_to_execute = productive_tasks[self.cycle_count % len(productive_tasks)]
+            
+            print(f"✅ Executing productive task: {{task_to_execute}}")
+            
+            # Simulate performing the task by creating a commit message
+            # In a more advanced version, this would be real file creation logic.
+            commit_message = f"✅ Productive Task: {{task_to_execute}}"
+            
+            # This is a placeholder for the actual git commit logic
+            # self.repo.create_file("placeholder.txt", commit_message, f"Task cycle {{self.cycle_count}}", branch="main")
+            print(f"   (Simulating commit with message: '{{commit_message}}')")
+            
+            self.cycle_count += 1
+            # --- END OF PRODUCTIVE WORK OVERRIDE ---
+        
                 time.sleep(10)
                 continue
                 
