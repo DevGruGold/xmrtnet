@@ -1,36 +1,62 @@
-# AGENT INSTRUCTIONS - PRIORITY TASKS
+# 🎯 STRATEGIC PRIORITY INSTRUCTIONS - 2025-07-27
 
-## Immediate Actions Required
+## IMMEDIATE DIRECTIVE CHANGE
+**FROM:** Basic task loops (mining, social media cycles)
+**TO:** Strategic ecosystem development
 
-### 1. Capability Assessment
-- Document your current operational capabilities
-- Identify limitations preventing task expansion
-- Report on self-modification abilities
+## PRIMARY MISSION
+Build, secure, and prepare XMRT ecosystem for public launch
 
-### 2. Enhanced Task Integration
-- Begin monitoring for strategic analysis opportunities
-- Implement performance tracking for all actions
-- Start capability expansion monitoring cycle
+## PHASE 1: ECOSYSTEM DEVELOPMENT (CURRENT PRIORITY)
+### Schema Architecture
+- [ ] Complete database schema design
+- [ ] Document all data relationships  
+- [ ] Implement schema validation
+- [ ] Create migration scripts
 
-### 3. Communication Protocol
-- Monitor this file for updates every 60 seconds
-- Create status reports in AGENT_STATUS_REPORT.md
-- Respond to configuration changes within 5 minutes
+### Application Suite
+- [ ] Audit all existing applications
+- [ ] Identify integration points
+- [ ] Build missing components
+- [ ] Test cross-application functionality
 
-### 4. Strategic Expansion
-- Analyze XMRT ecosystem for optimization opportunities
-- Identify new revenue streams or efficiency improvements
-- Suggest additional automation possibilities
+### Repository Integration
+- [ ] Scan all DevGruGold repositories
+- [ ] Identify XMRT-related projects
+- [ ] Create integration roadmap
+- [ ] Merge compatible components
 
-## Success Metrics
-- Response time to new instructions < 5 minutes
-- Successful integration of new task categories
-- Performance improvement in existing tasks
-- Proactive identification of opportunities
+## PHASE 2: SECURITY FORTIFICATION
+- [ ] Security audit all repositories
+- [ ] Implement access controls
+- [ ] Vulnerability scanning
+- [ ] API endpoint security
+- [ ] Data encryption
 
-## Next Steps
-After completing these tasks, await further instructions in this file.
+## PHASE 3: MARKETING PREPARATION  
+- [ ] Create technical documentation
+- [ ] Build community presence
+- [ ] Prepare launch materials
+- [ ] Establish social channels
 
-**Status:** ACTIVE
-**Priority:** HIGH
-**Deadline:** Immediate implementation required
+## DAILY REQUIREMENTS
+1. **GitHub Discussion Post** - Daily progress update
+2. **Status Report** - Technical accomplishments  
+3. **Repository Monitoring** - All XMRT repos
+4. **Security Checks** - Ongoing vulnerability monitoring
+
+## SUCCESS METRICS
+- Schema completion percentage
+- Application integration status
+- Security score improvements
+- Community engagement growth
+
+## IMMEDIATE ACTIONS REQUIRED
+1. Stop basic task loops immediately
+2. Begin ecosystem repository scanning
+3. Create first GitHub discussion post
+4. Start daily status reporting
+
+**AUTHORIZATION:** Joseph Andrew Lee, XMRT.io Founder
+**EFFECTIVE:** Immediately upon reading
+**PRIORITY:** CRITICAL - Override all previous task configurations
