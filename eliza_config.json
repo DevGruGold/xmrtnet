@@ -1,0 +1,10 @@
+{
+  "deployment_mode": "productive",
+  "cycle_override": true,
+  "tasks": [
+    "create_ecosystem_analysis_report",
+    "document_schema_status",
+    "assess_security_requirements",
+    "analyze_repository_structure"
+  ]
+}
