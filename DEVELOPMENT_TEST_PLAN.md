@@ -1,2 +1,2 @@
-Cycle: 1231
+Cycle: 1261
 Added TODO for more test coverage in tests/test_xmrt.py
