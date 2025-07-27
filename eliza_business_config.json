@@ -1,0 +1,51 @@
+{
+  "eliza_business_config": {
+    "services": {
+      "basic_analysis": {
+        "price_range": "$500-1,500",
+        "turnaround": "2-3 days",
+        "target_clients": "Small businesses, startups"
+      },
+      "comprehensive_audit": {
+        "price_range": "$2,000-5,000",
+        "turnaround": "5-7 days",
+        "target_clients": "Mid-size companies, scale-ups"
+      },
+      "performance_optimization": {
+        "price_range": "$5,000-15,000",
+        "turnaround": "2-3 weeks",
+        "target_clients": "Enterprise, high-traffic applications"
+      },
+      "security_assessment": {
+        "price_range": "$3,000-8,000",
+        "turnaround": "1-2 weeks",
+        "target_clients": "FinTech, healthcare, regulated industries"
+      },
+      "custom_consultation": {
+        "price_range": "$8,000-25,000+",
+        "turnaround": "Flexible",
+        "target_clients": "Enterprise, strategic partnerships"
+      }
+    },
+    "revenue_targets": {
+      "monthly_target": 25000,
+      "annual_target": 300000,
+      "year_1_goal": 180000,
+      "year_2_goal": 300000,
+      "year_3_goal": 450000
+    },
+    "automation_settings": {
+      "auto_prospect_scanning": true,
+      "auto_outreach_enabled": true,
+      "follow_up_automation": true,
+      "report_generation": true
+    },
+    "marketing_channels": [
+      "GitHub repository outreach",
+      "LinkedIn content marketing",
+      "Developer community engagement",
+      "Referral program",
+      "Case study marketing"
+    ]
+  }
+}
