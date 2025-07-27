@@ -1,16 +1,17 @@
 services:
-  - type: worker
-    name: eliza-truly-continuous
-    env: python
-    plan: starter
-    buildCommand: pip install -r requirements.txt
-    startCommand: python eliza_truly_continuous.py
-    envVars:
-      - key: GITHUB_TOKEN
-        sync: false
-      - key: GITHUB_REPO
-        value: DevGruGold/xmrtnet
-      - key: CHECK_INTERVAL
-        value: "300"
-    autoDeploy: false
-    branch: main
+- type: worker
+  name: eliza-truly-continuous
+  env: python
+  plan: starter
+  buildCommand: echo "Forcing clean build at 2025-07-27T05:26:18.187321" && pip install
+    -r requirements.txt
+  startCommand: python eliza_truly_continuous.py
+  envVars:
+  - key: GITHUB_TOKEN
+    sync: false
+  - key: GITHUB_REPO
+    value: DevGruGold/xmrtnet
+  - key: CHECK_INTERVAL
+    value: '300'
+  autoDeploy: false
+  branch: main
