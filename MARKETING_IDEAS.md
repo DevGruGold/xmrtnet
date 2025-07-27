@@ -1,2 +1,2 @@
-Cycle: 332
+Cycle: 356
 Drafted Twitter thread: 'XMRT, privacy for a new era! 🚀 #Crypto #Privacy'
