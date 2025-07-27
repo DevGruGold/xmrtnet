@@ -1,0 +1,84 @@
+{
+  "deployment_mode": "productive",
+  "fake_cycles_disabled": true,
+  "real_work_enabled": true,
+  "productive_tasks": {
+    "ecosystem_development": {
+      "priority": "high",
+      "enabled": true,
+      "tasks": [
+        "audit_all_repositories",
+        "document_current_architecture",
+        "identify_integration_opportunities",
+        "create_development_roadmap",
+        "analyze_code_quality"
+      ],
+      "interval_minutes": 30,
+      "output_format": "detailed_reports"
+    },
+    "schema_completion": {
+      "priority": "critical",
+      "enabled": true,
+      "tasks": [
+        "analyze_existing_database_schemas",
+        "identify_missing_schema_components",
+        "document_data_relationships",
+        "create_schema_migration_plans",
+        "validate_schema_integrity"
+      ],
+      "interval_minutes": 60,
+      "output_format": "technical_documentation"
+    },
+    "security_assessment": {
+      "priority": "high",
+      "enabled": true,
+      "tasks": [
+        "scan_repositories_for_vulnerabilities",
+        "analyze_API_security",
+        "review_access_controls",
+        "document_security_improvements",
+        "create_security_checklist"
+      ],
+      "interval_minutes": 120,
+      "output_format": "security_reports"
+    },
+    "documentation_creation": {
+      "priority": "medium",
+      "enabled": true,
+      "tasks": [
+        "create_API_documentation",
+        "document_deployment_processes",
+        "write_user_guides",
+        "maintain_technical_specifications",
+        "update_README_files"
+      ],
+      "interval_minutes": 45,
+      "output_format": "markdown_documentation"
+    },
+    "community_engagement": {
+      "priority": "medium",
+      "enabled": true,
+      "tasks": [
+        "create_github_discussions",
+        "respond_to_issues",
+        "update_project_status",
+        "share_development_progress",
+        "engage_with_contributors"
+      ],
+      "interval_minutes": 180,
+      "output_format": "community_posts"
+    }
+  },
+  "work_verification": {
+    "require_actual_output": true,
+    "verify_file_creation": true,
+    "check_content_quality": true,
+    "no_placeholder_content": true
+  },
+  "reporting": {
+    "daily_progress_report": true,
+    "task_completion_metrics": true,
+    "productivity_tracking": true,
+    "honest_capability_assessment": true
+  }
+}
