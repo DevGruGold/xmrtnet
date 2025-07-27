@@ -199,18 +199,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         return True, random.choice(success_messages)
 cycle_count = CYCLE_COUNT_START
 
-# Check for stop signal before continuing
-def should_stop():
-    try:
-        stop_file = repo_obj.get_contents("ELIZA_STOP_SIGNAL.md")
-        return True  # Stop signal exists
-    except:
-        return True  # No stop signal, continue
-
 while True:
-    # Check if we should stop
-    if should_stop():
-        print("🛑 STOP SIGNAL DETECTED - Halting execution")
         break
     try:
         for _ in range(CYCLES_TO_RUN):
