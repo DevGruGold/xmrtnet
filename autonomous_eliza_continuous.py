@@ -200,7 +200,6 @@ def do_real_task(domain, task, repo_obj, cycle_count):
 cycle_count = CYCLE_COUNT_START
 
 while True:
-        break
     try:
         for _ in range(CYCLES_TO_RUN):
             domain, preferred_tool = domains[(cycle_count-1) % len(domains)]
