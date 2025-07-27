@@ -1,0 +1,15 @@
+{
+  "mode": "productive",
+  "fake_tasks_disabled": true,
+  "productive_tasks_enabled": true,
+  "task_override": {
+    "Browser action": "Ecosystem Analysis",
+    "Mining action": "Schema Documentation",
+    "Analytics action": "Security Assessment",
+    "Development action": "Repository Analysis",
+    "Social_Media action": "Community Documentation",
+    "Marketing action": "Project Planning"
+  },
+  "file_creation_required": true,
+  "commit_message_format": "\ud83d\udcdd {task_name} - {description}"
+}
