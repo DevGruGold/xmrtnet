@@ -1,2 +1,2 @@
-Cycle: 127
+Cycle: 157
 Added TODO for more test coverage in tests/test_xmrt.py
