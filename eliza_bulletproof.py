@@ -1,3 +1,20 @@
+
+# CRITICAL: Check for stop flag before any operations
+import os
+import sys
+
+# Check for stop flag
+try:
+    with open('STOP_FAKE_TASKS.flag', 'r') as f:
+        if 'STOP_FAKE_TASKS=true' in f.read():
+            print("🛑 STOP FLAG DETECTED - Terminating fake task cycles")
+            print("📋 Verification system must be implemented")
+            print("❌ Fake task cycles are now prohibited")
+            sys.exit(0)
+except FileNotFoundError:
+    pass
+
+
 #!/usr/bin/env python3
 """
 BULLETPROOF CONTINUOUS ELIZA - NO EXITS ALLOWED
