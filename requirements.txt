@@ -1,11 +1,5 @@
-streamlit
 requests
-python-dotenv
-pandas
-plotly
-
-
-# Autonomous Eliza Requirements
-PyGithub==2.6.1
-requests>=2.32.3
-python-dotenv>=1.0.0
+PyGithub
+PyYAML
+Flask
+gunicorn
