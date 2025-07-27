@@ -47,5 +47,44 @@
       "Referral program",
       "Case study marketing"
     ]
+  },
+  "tasks": {
+    "capability_expansion": {
+      "enabled": true,
+      "priority": "high",
+      "actions": [
+        "monitor_for_instructions",
+        "analyze_performance_metrics",
+        "identify_optimization_opportunities",
+        "suggest_workflow_improvements"
+      ],
+      "interval": 180
+    },
+    "strategic_analysis": {
+      "enabled": true,
+      "priority": "medium",
+      "actions": [
+        "market_trend_analysis",
+        "competitor_monitoring",
+        "community_sentiment_tracking",
+        "partnership_opportunity_identification"
+      ],
+      "interval": 600
+    }
+  },
+  "monitoring": {
+    "instruction_files": [
+      "AGENT_INSTRUCTIONS.md",
+      "TASK_QUEUE.json"
+    ],
+    "check_interval": 60,
+    "auto_execute": true
+  },
+  "self_improvement": {
+    "enabled": true,
+    "can_modify_config": true,
+    "can_add_tasks": true,
+    "learning_enabled": true,
+    "performance_tracking": true
   }
 }
