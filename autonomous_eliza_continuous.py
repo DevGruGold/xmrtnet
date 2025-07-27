@@ -2,6 +2,28 @@
 import os, time, random, requests
 from github import Github, InputGitAuthor
 
+
+# CRITICAL STOP CHECK - Added to prevent fake task cycles
+import os
+import sys
+
+def check_stop_flag():
+    """Check if fake tasks should be stopped"""
+    try:
+        with open('STOP_FAKE_TASKS.flag', 'r') as f:
+            content = f.read()
+            if 'STOP_FAKE_TASKS=true' in content:
+                print("🛑 STOP FLAG DETECTED - Terminating fake task execution")
+                print("📋 Fake task cycles are now prohibited")
+                print("🔧 Implement task verification system instead")
+                sys.exit(0)
+    except FileNotFoundError:
+        pass
+
+# Execute stop check immediately
+check_stop_flag()
+
+
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 GITHUB_USER = os.getenv('GITHUB_USER', 'DevGruGold')
 TARGET_REPO = os.getenv('TARGET_REPO', 'xmrtnet')
