@@ -50,25 +50,21 @@ class ElizaAutonomousSystem:
             try:
                 # Try to get existing file
                 existing_file = repo.get_contents(log_path, ref="main")
-                # Update existing file with Eliza as author
+                # Update existing file
                 repo.update_file(
                     path=log_path,
                     message=f"📝 Update {log_type} log: {filename}",
                     content=content.encode('utf-8'),
                     sha=existing_file.sha,
-                    branch="main",
-                    author={"name": "Eliza Autonomous", "email": "joeyleepcs@gmail.com"},
-                    committer={"name": self.github_username, "email": f"{self.github_username}@users.noreply.github.com"}
+                    branch="main"
                 )
             except:
-                # Create new file with Eliza as author
+                # Create new file
                 repo.create_file(
                     path=log_path,
                     message=f"📝 Create {log_type} log: {filename}",
                     content=content.encode('utf-8'),
-                    branch="main",
-                    author={"name": "Eliza Autonomous", "email": "xmrtnet@gmail.com"},
-                    committer={"name": self.github_username, "email": f"{self.github_username}@users.noreply.github.com"}
+                    branch="main"
                 )
             
             self.logger.info(f"✅ Logged to {log_path}")
