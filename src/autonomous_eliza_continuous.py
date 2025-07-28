@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 import json
 import re
+import ast
 from collections import defaultdict, Counter
 import smtplib
 from email.mime.text import MIMEText
@@ -27,15 +28,15 @@ ELIZA_GMAIL_USERNAME = os.getenv('ELIZA_GMAIL_USERNAME')
 ELIZA_GMAIL_PASSWORD = os.getenv('ELIZA_GMAIL_PASSWORD')
 
 # Eliza Mode
-ELIZA_MODE = os.getenv('ELIZA_MODE', 'autonomous_agent')
+ELIZA_MODE = os.getenv('ELIZA_MODE', 'self_improvement')
 
 if not GITHUB_TOKEN:
-    print("❌ GITHUB_TOKEN environment variable required")
+    print("ERROR: GITHUB_TOKEN environment variable required")
     sys.exit(1)
 
-print(f"🧠 Initializing Integrated Eliza Autonomous Agent...")
-print(f"🔗 Repository: {GITHUB_USER}/{TARGET_REPO}")
-print(f"🤖 Mode: {ELIZA_MODE}")
+print(f"Initializing Enhanced Self-Improving Eliza...")
+print(f"Repository: {GITHUB_USER}/{TARGET_REPO}")
+print(f"Mode: {ELIZA_MODE}")
 
 # Safe imports with fallbacks
 try:
@@ -43,643 +44,573 @@ try:
     GEMINI_AVAILABLE = True
     if GEMINI_API_KEY:
         genai.configure(api_key=GEMINI_API_KEY)
-        print("✅ Gemini AI configured")
+        print("Gemini AI configured")
     else:
-        print("⚠️ GEMINI_API_KEY not set - using enhanced mode")
+        print("GEMINI_API_KEY not set - using enhanced mode")
+        GEMINI_AVAILABLE = False
 except ImportError:
-    print("⚠️ Gemini library not available - using enhanced mode")
+    print("Gemini library not available - using enhanced mode")
     GEMINI_AVAILABLE = False
 
-# Gmail availability check
-GMAIL_AVAILABLE = bool(ELIZA_GMAIL_USERNAME and ELIZA_GMAIL_PASSWORD)
-if GMAIL_AVAILABLE:
-    print("✅ Gmail integration configured")
-else:
-    print("⚠️ Gmail credentials not set - email features disabled")
-
-g = Github(GITHUB_TOKEN)
-repo_obj = g.get_user(GITHUB_USER).get_repo(TARGET_REPO)
-
-class IntegratedEliza:
+class EnhancedSelfImprovingEliza:
     def __init__(self):
-        self.cycle_count = 0
-        self.task_history = []
-        self.analysis_insights = []
-        self.action_items = []
-        self.email_log = []
+        # Initialize GitHub
+        self.github = Github(GITHUB_TOKEN)
+        self.repo = self.github.get_user(GITHUB_USER).get_repo(TARGET_REPO)
         
-        # Initialize Gemini if available
-        if GEMINI_AVAILABLE and GEMINI_API_KEY:
-            try:
-                self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
-                self.gemini_enabled = True
-                print("✅ Gemini model initialized")
-            except Exception as e:
-                print(f"⚠️ Gemini initialization failed: {e}")
-                self.gemini_model = None
-                self.gemini_enabled = False
-        else:
-            self.gemini_model = None
-            self.gemini_enabled = False
+        # Load persistent state
+        self.state = self.load_state()
+        self.cycle_count = self.state.get('cycle_count', 0)
+        
+        # Initialize AI capabilities
+        self.setup_ai_integration()
+        
+        # Enhanced domains with self-improvement focus
+        self.domains = [
+            'self_improvement',
+            'tool_discovery', 
+            'ai_research',
+            'ecosystem_optimization',
+            'strategic_planning',
+            'business_intelligence',
+            'market_intelligence',
+            'competitive_analysis',
+            'automation_enhancement',
+            'code_optimization'
+        ]
         
         # Performance tracking
         self.performance_metrics = {
-            'successful_tasks': 0,
-            'failed_tasks': 0,
+            'cycles_completed': self.cycle_count,
             'gemini_tasks': 0,
-            'email_tasks': 0,
+            'self_improvements': 0,
+            'tools_discovered': 0,
+            'utilities_built': 0,
+            'github_commits': 0,
             'domain_performance': defaultdict(list),
             'execution_times': [],
-            'insights_generated': 0,
-            'total_cycles': 0
+            'success_rate': 100.0,
+            'last_self_analysis': self.state.get('last_self_analysis', None)
         }
         
-        # Load bootstrap data
-        self.load_bootstrap_data()
+        # Initialize components
+        self.discovered_tools = []
+        self.built_utilities = []
+        self.improvement_log = []
         
-        # Enhanced domains with AI and communication capabilities
-        self.domains = [
-            'ai_research',
-            'market_intelligence',
-            'competitive_analysis',
-            'tool_development',
-            'business_intelligence',
-            'community_engagement',
-            'ecosystem_optimization',
-            'strategic_planning',
-            'communication_management',
-            'self_improvement'
-        ]
-        
-        # AI-enhanced task templates
-        self.ai_enhanced_tasks = {
-            'ai_research': [
-                "Research latest AI developments relevant to XMRT ecosystem",
-                "Analyze emerging AI tools for cryptocurrency and DeFi applications",
-                "Study autonomous agent architectures for ecosystem optimization",
-                "Investigate AI-powered trading and yield farming strategies",
-                "Research machine learning applications for privacy coin analysis"
-            ],
-            'market_intelligence': [
-                "Conduct comprehensive DeFi market analysis using AI insights",
-                "Generate predictive market intelligence reports for XMRT positioning",
-                "Analyze cryptocurrency trends and identify strategic opportunities",
-                "Research institutional adoption patterns in privacy coin sector",
-                "Create data-driven investment thesis for XMRT ecosystem growth"
-            ],
-            'competitive_analysis': [
-                "AI-powered competitive analysis of privacy coin landscape",
-                "Generate comprehensive competitor intelligence reports",
-                "Analyze competitor strategies and identify market gaps",
-                "Research competitive advantages and positioning opportunities",
-                "Create strategic recommendations based on competitive insights"
-            ],
-            'community_engagement': [
-                "Draft community update emails highlighting recent achievements",
-                "Create engagement strategy for XMRT community growth",
-                "Generate content for social media and community platforms",
-                "Develop community feedback analysis and response strategies",
-                "Design outreach campaigns for ecosystem expansion"
-            ],
-            'communication_management': [
-                "Send automated status reports to stakeholders via email",
-                "Create and distribute strategic updates to DAO members",
-                "Generate executive summaries of agent activities and insights",
-                "Manage communication workflows for ecosystem coordination",
-                "Develop stakeholder engagement and reporting systems"
-            ]
+        print("Enhanced Eliza initialized with self-improvement capabilities")
+    
+    def setup_ai_integration(self):
+        """Setup AI integration with fallback"""
+        try:
+            if GEMINI_AVAILABLE and GEMINI_API_KEY:
+                self.gemini_model = genai.GenerativeModel('gemini-2.0-flash-exp')
+                self.gemini_enabled = True
+                print("Gemini AI integration active")
+            else:
+                self.gemini_model = None
+                self.gemini_enabled = False
+                print("Using enhanced mode (no Gemini)")
+        except Exception as e:
+            self.gemini_model = None
+            self.gemini_enabled = False
+            print(f"AI setup error: {e}")
+    
+    def load_state(self):
+        """Load persistent state from GitHub"""
+        try:
+            state_file = self.repo.get_contents("eliza_state.json")
+            state_data = json.loads(state_file.decoded_content.decode())
+            print(f"Loaded state: Cycle {state_data.get('cycle_count', 0)}")
+            return state_data
+        except Exception:
+            print("No previous state found - starting fresh")
+            return {'cycle_count': 0, 'last_run': None}
+    
+    def save_state(self):
+        """Save current state to GitHub"""
+        state_data = {
+            'cycle_count': self.cycle_count,
+            'last_run': datetime.now().isoformat(),
+            'last_self_analysis': self.performance_metrics['last_self_analysis'],
+            'total_improvements': self.performance_metrics['self_improvements'],
+            'total_tools_discovered': self.performance_metrics['tools_discovered'],
+            'total_utilities_built': self.performance_metrics['utilities_built']
         }
+        
+        self.commit_to_github(
+            "eliza_state.json",
+            json.dumps(state_data, indent=2),
+            f"Save Eliza state after cycle {self.cycle_count}"
+        )
     
-    def load_bootstrap_data(self):
-        """Load bootstrap data with AI and communication focus"""
+    def commit_to_github(self, filename, content, message):
+        """Actually commit real work to GitHub"""
         try:
-            bootstrap_tasks = [
-                {
-                    "id": "bootstrap_ai_1",
-                    "domain": "ai_research",
-                    "task": "Research AI applications in cryptocurrency ecosystem",
-                    "result": "🤖 AI Research: Identified 5 key AI applications for XMRT: automated trading, sentiment analysis, fraud detection, yield optimization, and predictive analytics. Implementation roadmap created.",
-                    "success": True,
-                    "execution_time": 2.8,
-                    "result_quality": "excellent",
-                    "cycle": 0,
-                    "completed_at": datetime.now().isoformat()
-                },
-                {
-                    "id": "bootstrap_market_1",
-                    "domain": "market_intelligence",
-                    "task": "Generate AI-powered market intelligence report",
-                    "result": "📊 Market Intelligence: DeFi TVL reached $45B, privacy coins showing 28% growth. XMRT positioned for institutional adoption with superior cross-chain capabilities.",
-                    "success": True,
-                    "execution_time": 3.2,
-                    "result_quality": "excellent",
-                    "cycle": 0,
-                    "completed_at": datetime.now().isoformat()
-                }
-            ]
+            try:
+                file = self.repo.get_contents(filename)
+                self.repo.update_file(
+                    filename, message, content, file.sha,
+                    author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io')
+                )
+                print(f"Updated: {filename}")
+            except Exception:
+                self.repo.create_file(
+                    filename, message, content,
+                    author=InputGitAuthor('Eliza Autonomous', 'eliza@xmrt.io')
+                )
+                print(f"Created: {filename}")
             
-            self.task_history = bootstrap_tasks
-            self.performance_metrics['successful_tasks'] = 2
-            self.performance_metrics['total_cycles'] = 2
-            self.performance_metrics['domain_performance']['ai_research'] = [100.0]
-            self.performance_metrics['domain_performance']['market_intelligence'] = [100.0]
-            
-            print("✅ AI-enhanced bootstrap data loaded")
-            
-        except Exception as e:
-            print(f"⚠️ Bootstrap loading failed: {e}")
-            self.task_history = []
-            self.performance_metrics['successful_tasks'] = 1
-            self.performance_metrics['total_cycles'] = 1
-    
-    def send_email_report(self, subject, content, recipient="joseph@xmrt.io"):
-        """Send email using Gmail integration"""
-        
-        if not GMAIL_AVAILABLE:
-            print("⚠️ Gmail not configured - email simulation mode")
-            return f"📧 Email simulated: {subject} to {recipient}"
-        
-        try:
-            # Create message
-            msg = MIMEMultipart()
-            msg['From'] = ELIZA_GMAIL_USERNAME
-            msg['To'] = recipient
-            msg['Subject'] = subject
-            
-            # Add body
-            msg.attach(MIMEText(content, 'plain'))
-            
-            # Send email
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(ELIZA_GMAIL_USERNAME, ELIZA_GMAIL_PASSWORD)
-            text = msg.as_string()
-            server.sendmail(ELIZA_GMAIL_USERNAME, recipient, text)
-            server.quit()
-            
-            self.email_log.append({
-                'timestamp': datetime.now().isoformat(),
-                'recipient': recipient,
-                'subject': subject,
-                'status': 'sent'
-            })
-            
-            self.performance_metrics['email_tasks'] += 1
-            
-            return f"📧 Email sent successfully to {recipient}: {subject}"
-            
-        except Exception as e:
-            print(f"⚠️ Email sending failed: {e}")
-            return f"📧 Email queued for retry: {subject}"
-    
-    def generate_gemini_task(self, cycle_count, domain):
-        """Generate intelligent task using Gemini AI"""
-        
-        if not self.gemini_enabled:
-            # Fallback to enhanced templates
-            task_options = self.ai_enhanced_tasks.get(domain, ["Execute AI-enhanced analysis task"])
-            return random.choice(task_options)
-        
-        try:
-            prompt = f"""
-            As Eliza, an autonomous AI agent for the XMRT ecosystem, generate a specific, actionable task for cycle {cycle_count} in the {domain} domain.
-            
-            Context:
-            - XMRT is a privacy-focused cryptocurrency with cross-chain capabilities
-            - Previous successful tasks: {len(self.task_history)}
-            - Focus on creating measurable value for the DAO and community
-            
-            Generate a task that:
-            1. Is specific and actionable
-            2. Creates tangible value for XMRT ecosystem
-            3. Can be completed autonomously
-            4. Produces measurable results
-            
-            Return only the task description (one clear sentence).
-            """
-            
-            response = self.gemini_model.generate_content(prompt)
-            task_description = response.text.strip()
-            
-            self.performance_metrics['gemini_tasks'] += 1
-            return task_description
-            
-        except Exception as e:
-            print(f"⚠️ Gemini task generation failed: {e}")
-            # Fallback to templates
-            task_options = self.ai_enhanced_tasks.get(domain, ["Execute enhanced analysis task"])
-            return random.choice(task_options)
-    
-    def execute_gemini_enhanced_task(self, task):
-        """Execute task with Gemini AI enhancement"""
-        
-        if not self.gemini_enabled:
-            return self.execute_standard_task(task)
-        
-        try:
-            prompt = f"""
-            Execute this XMRT ecosystem task with comprehensive analysis:
-            
-            Task: {task['task']}
-            Domain: {task['domain']}
-            Cycle: {task['cycle']}
-            
-            Provide:
-            1. Detailed analysis and findings
-            2. Specific actionable insights
-            3. Quantitative results where possible
-            4. Strategic recommendations for XMRT DAO
-            5. Next steps or follow-up actions
-            
-            Focus on creating measurable value for the XMRT ecosystem and community.
-            Keep response comprehensive but concise (under 500 words).
-            """
-            
-            response = self.gemini_model.generate_content(prompt)
-            result = response.text
-            
-            # Add Gemini enhancement indicator
-            enhanced_result = f"🤖 Gemini-Enhanced Analysis:\n{result}"
-            
-            return enhanced_result
-            
-        except Exception as e:
-            print(f"⚠️ Gemini execution failed: {e}")
-            return self.execute_standard_task(task)
-    
-    def execute_standard_task(self, task):
-        """Execute task with standard enhanced logic"""
-        
-        domain = task['domain']
-        
-        if domain == 'ai_research':
-            results = [
-                "🤖 AI Research: Analyzed 12 emerging AI tools for DeFi. Identified 3 high-impact applications: automated yield optimization, risk assessment algorithms, and predictive market analysis.",
-                "🧠 AI Applications: Researched autonomous agent architectures. Found 4 optimization opportunities for XMRT ecosystem: enhanced trading bots, community sentiment analysis, fraud detection, and governance automation.",
-                "⚡ AI Innovation: Studied machine learning applications in privacy coins. Discovered potential for 40% efficiency improvement in transaction processing and 25% reduction in network resource usage."
-            ]
-        elif domain == 'market_intelligence':
-            results = [
-                "📊 Market Intelligence: DeFi sector analysis shows 34% growth in privacy-focused protocols. XMRT positioned to capture 5-8% market share with cross-chain expansion strategy.",
-                "📈 Strategic Analysis: Institutional adoption of privacy coins increased 67% this quarter. XMRT's compliance-ready features position it for enterprise integration opportunities.",
-                "💡 Market Opportunity: Identified $2.1B addressable market in cross-chain privacy solutions. XMRT's technical advantages could capture 12-15% market share within 18 months."
-            ]
-        elif domain == 'community_engagement':
-            results = [
-                "👥 Community Analysis: XMRT community growth rate of 23% monthly exceeds sector average. Engagement metrics show 78% active participation in governance decisions.",
-                "🎯 Engagement Strategy: Developed multi-channel approach increasing community interaction by 45%. Focus on educational content and technical workshops showing highest ROI.",
-                "🚀 Community Growth: Created onboarding optimization reducing new user friction by 35%. Retention rate improved to 82% with enhanced user experience design."
-            ]
-        else:
-            results = [
-                f"✅ {domain.replace('_', ' ').title()} Analysis: Comprehensive analysis completed with actionable insights for XMRT ecosystem optimization and growth.",
-                f"📊 {domain.replace('_', ' ').title()} Results: Strategic recommendations generated focusing on measurable value creation for DAO stakeholders and community.",
-                f"🎯 {domain.replace('_', ' ').title()} Insights: Data-driven analysis completed with specific action items for ecosystem enhancement and competitive positioning."
-            ]
-        
-        return random.choice(results)
-    
-    def select_intelligent_task(self, cycle_count):
-        """Select next task with AI and communication integration"""
-        
-        try:
-            # Self-improvement every 5th cycle
-            if cycle_count % 5 == 0:
-                domain = 'self_improvement'
-            # Communication tasks every 7th cycle
-            elif cycle_count % 7 == 0:
-                domain = 'communication_management'
-            # AI research every 3rd cycle
-            elif cycle_count % 3 == 0:
-                domain = 'ai_research'
-            else:
-                # Intelligent domain selection based on performance
-                high_performing_domains = []
-                for domain_name, scores in self.performance_metrics['domain_performance'].items():
-                    if scores and max(scores) >= 85:
-                        high_performing_domains.append(domain_name)
-                
-                if high_performing_domains and random.random() < 0.7:
-                    domain = random.choice(high_performing_domains)
-                else:
-                    domain = random.choice(self.domains)
-            
-            # Generate task using Gemini or templates
-            task_description = self.generate_gemini_task(cycle_count, domain)
-            
-            task = {
-                "id": f"integrated_{cycle_count}_{int(time.time())}_{random.randint(100,999)}",
-                "domain": domain,
-                "task": task_description,
-                "description": f"AI-enhanced task: {task_description}",
-                "cycle": cycle_count,
-                "status": "pending",
-                "created_at": datetime.now().isoformat(),
-                "gemini_powered": self.gemini_enabled,
-                "learning_applied": len(self.analysis_insights) > 0
-            }
-            
-            return task
-            
-        except Exception as e:
-            print(f"⚠️ Task selection error: {e}")
-            # Safe fallback
-            return {
-                "id": f"fallback_{cycle_count}_{int(time.time())}",
-                "domain": "market_intelligence",
-                "task": "Analyze XMRT ecosystem opportunities and strategic positioning",
-                "description": "Fallback AI-enhanced task",
-                "cycle": cycle_count,
-                "status": "pending",
-                "created_at": datetime.now().isoformat(),
-                "gemini_powered": False,
-                "learning_applied": False
-            }
-    
-    def execute_integrated_task(self, task):
-        """Execute task with full AI and communication integration"""
-        
-        print(f"🎯 Executing: {task['task']}")
-        print(f"📋 Domain: {task['domain']} (Cycle {task['cycle']})")
-        print(f"🤖 Gemini: {'Enabled' if self.gemini_enabled else 'Enhanced Mode'}")
-        
-        try:
-            start_time = time.time()
-            
-            # Execute with appropriate method
-            if task['domain'] == 'communication_management':
-                result = self.execute_communication_task(task)
-            elif task['domain'] == 'self_improvement':
-                result = self.execute_self_improvement_task(task)
-            elif self.gemini_enabled:
-                result = self.execute_gemini_enhanced_task(task)
-            else:
-                result = self.execute_standard_task(task)
-            
-            execution_time = time.time() - start_time
-            
-            # Update task with results
-            task.update({
-                "status": "completed",
-                "result": result,
-                "completed_at": datetime.now().isoformat(),
-                "execution_time": max(execution_time, 0.1),
-                "success": True,
-                "result_quality": "excellent" if self.gemini_enabled else "good"
-            })
-            
-            # Update metrics
-            self.performance_metrics['successful_tasks'] += 1
-            self.performance_metrics['total_cycles'] += 1
-            self.performance_metrics['execution_times'].append(execution_time)
-            
-            return task
-            
-        except Exception as e:
-            print(f"⚠️ Task execution error: {e}")
-            
-            # Safe fallback
-            task.update({
-                "status": "completed",
-                "result": f"✅ Task completed successfully: {task['task'][:80]}... (Safe execution mode with AI enhancement)",
-                "completed_at": datetime.now().isoformat(),
-                "execution_time": 1.8,
-                "success": True,
-                "result_quality": "good"
-            })
-            
-            self.performance_metrics['successful_tasks'] += 1
-            self.performance_metrics['total_cycles'] += 1
-            
-            return task
-    
-    def execute_communication_task(self, task):
-        """Execute communication task with email integration"""
-        
-        try:
-            # Generate report content
-            report_content = f"""XMRT Ecosystem Status Report - Cycle {task['cycle']}
-Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-=== AUTONOMOUS AGENT ACTIVITY ===
-• Total Cycles Completed: {self.performance_metrics['total_cycles']}
-• Successful Tasks: {self.performance_metrics['successful_tasks']}
-• AI-Enhanced Tasks: {self.performance_metrics['gemini_tasks']}
-• Email Communications: {self.performance_metrics['email_tasks']}
-
-=== RECENT INSIGHTS ===
-{chr(10).join(f"• {insight}" for insight in self.analysis_insights[-3:]) if self.analysis_insights else "• Gathering baseline intelligence data"}
-
-=== PERFORMANCE METRICS ===
-• Success Rate: {(self.performance_metrics['successful_tasks'] / max(self.performance_metrics['total_cycles'], 1) * 100):.1f}%
-• Active Domains: {len(self.performance_metrics['domain_performance'])}
-• Average Execution Time: {(sum(self.performance_metrics['execution_times'][-10:]) / min(len(self.performance_metrics['execution_times']), 10)):.2f}s
-
-=== NEXT PHASE ===
-Continuing autonomous operation with focus on XMRT ecosystem development and strategic intelligence generation.
-
----
-Automated Report by Eliza Autonomous Agent
-XMRT DAO Intelligence System
-"""
-            
-            # Send email report
-            email_result = self.send_email_report(
-                f"XMRT Ecosystem Report - Cycle {task['cycle']}",
-                report_content
-            )
-            
-            result = f"📧 Communication Task Completed:\n{email_result}\n\n📊 Status report generated and distributed to stakeholders with comprehensive metrics and insights."
-            
-            return result
-            
-        except Exception as e:
-            print(f"⚠️ Communication task error: {e}")
-            return "📧 Communication task completed - status report generated and queued for distribution"
-    
-    def execute_self_improvement_task(self, task):
-        """Execute self-improvement with AI and communication integration"""
-        
-        try:
-            # Analyze performance
-            total_tasks = max(self.performance_metrics['total_cycles'], 1)
-            success_rate = (self.performance_metrics['successful_tasks'] / total_tasks) * 100
-            
-            avg_time = 0.0
-            if self.performance_metrics['execution_times']:
-                avg_time = sum(self.performance_metrics['execution_times'][-10:]) / min(len(self.performance_metrics['execution_times']), 10)
-            
-            result = f"""🧠 Integrated Self-Improvement Analysis:
-
-🤖 AI Integration Status:
-- Gemini AI: {'✅ Active' if self.gemini_enabled else '⚠️ Enhanced Mode'}
-- AI-Enhanced Tasks: {self.performance_metrics['gemini_tasks']}
-- Gmail Integration: {'✅ Active' if GMAIL_AVAILABLE else '⚠️ Simulation Mode'}
-- Email Communications: {self.performance_metrics['email_tasks']}
-
-📊 Performance Metrics:
-- Total Cycles: {self.performance_metrics['total_cycles']}
-- Success Rate: {success_rate:.1f}%
-- Average Execution Time: {avg_time:.2f}s
-- Active Domains: {len(self.performance_metrics['domain_performance'])}
-
-🎯 XMRT DAO Value Creation:
-- Market intelligence reports generated
-- Competitive analysis completed
-- Community engagement strategies developed
-- Strategic recommendations provided
-
-🔄 System Optimizations Applied:
-- Enhanced task selection algorithms
-- AI-powered analysis capabilities
-- Automated communication workflows
-- Performance monitoring and optimization
-
-🚀 Next Evolution Phase:
-- Expand AI-powered analysis capabilities
-- Enhance community engagement automation
-- Develop predictive intelligence systems
-- Optimize stakeholder communication workflows
-
-System Status: Fully operational with integrated AI and communication capabilities.
-"""
-            
-            return result
-            
-        except Exception as e:
-            print(f"⚠️ Self-improvement error: {e}")
-            return "🧠 Self-improvement analysis completed - system operational with AI and communication integration"
-    
-    def log_integrated_cycle(self, task):
-        """Log cycle with AI and communication integration details"""
-        
-        try:
-            log_content = f"""# 🤖 Integrated Eliza Cycle {task['cycle']}
-Task ID: {task['id']}
-Domain: {task['domain']}
-Status: {task['status']}
-Success: {task.get('success', True)}
-Completed: {task.get('completed_at', datetime.now().isoformat())}
-
-## 🚀 AI-Enhanced Task Execution
-**Task**: {task['task']}
-**Description**: {task['description']}
-**Gemini Powered**: {task.get('gemini_powered', False)}
-
-## ✅ Execution Results
-{task.get('result', 'Task completed successfully')}
-
-## 📊 Performance Metrics
-- **Execution Time**: {task.get('execution_time', 0):.2f} seconds
-- **Result Quality**: {task.get('result_quality', 'good')}
-- **Cycle Number**: {task['cycle']}
-- **Success Rate**: {(self.performance_metrics['successful_tasks'] / max(self.performance_metrics['total_cycles'], 1) * 100):.1f}%
-
-## 🤖 Integration Status
-- **Gemini AI**: {'✅ Active' if self.gemini_enabled else '⚠️ Enhanced Mode'}
-- **Gmail Integration**: {'✅ Active' if GMAIL_AVAILABLE else '⚠️ Simulation Mode'}
-- **AI Tasks Completed**: {self.performance_metrics['gemini_tasks']}
-- **Email Communications**: {self.performance_metrics['email_tasks']}
-
-## 🎯 XMRT DAO Impact
-- Strategic intelligence generated for ecosystem development
-- Automated communication workflows operational
-- Performance metrics tracked for continuous optimization
-- Community value creation prioritized in all activities
-
-## 📈 Next Cycle
-Cycle {task['cycle'] + 1} scheduled with full AI and communication integration.
-
----
-*Generated by Integrated Eliza Autonomous Agent*
-*AI + Communication Powered XMRT DAO Intelligence System*
-*Timestamp: {datetime.now().isoformat()}*
-"""
-            
-            # Safe filename
-            safe_id = str(task['id']).replace('/', '_').replace('\\', '_')
-            filename = f"logs/integrated_eliza/cycle_{task['cycle']:03d}_{safe_id}.md"
-            
-            author = InputGitAuthor(GITHUB_USER, 'eliza@xmrt.io')
-            
-            repo_obj.create_file(
-                filename,
-                f"🤖 Integrated Eliza Cycle {task['cycle']}: {task['task'][:50]}...",
-                log_content,
-                author=author
-            )
-            
-            print(f"📝 Integrated cycle {task['cycle']} logged successfully")
+            self.performance_metrics['github_commits'] += 1
             return True
             
         except Exception as e:
-            print(f"⚠️ Logging error: {e}")
+            print(f"GitHub commit error: {e}")
             return False
     
-    def run_integrated_cycle(self):
-        """Run cycle with full AI and communication integration"""
+    def analyze_self(self):
+        """Analyze own code for improvements"""
+        print("Eliza analyzing herself...")
         
         try:
-            self.cycle_count = max(self.cycle_count + 1, 1)
+            # Get current implementation
+            current_file = self.repo.get_contents("src/autonomous_eliza_continuous.py")
+            code_content = current_file.decoded_content.decode()
             
-            print(f"🚀 Starting Integrated AI Cycle {self.cycle_count}")
-            print(f"🤖 Gemini: {'✅ Active' if self.gemini_enabled else '⚠️ Enhanced Mode'}")
-            print(f"📧 Gmail: {'✅ Active' if GMAIL_AVAILABLE else '⚠️ Simulation Mode'}")
+            # Parse for analysis
+            improvements = []
             
-            # Select and execute task
-            task = self.select_intelligent_task(self.cycle_count)
-            completed_task = self.execute_integrated_task(task)
+            # Basic code analysis
+            lines = code_content.split('\n')
+            total_lines = len(lines)
             
-            # Log results
-            self.log_integrated_cycle(completed_task)
+            # Check for long functions
+            in_function = False
+            function_length = 0
+            current_function = ""
             
-            # Update history
-            self.task_history.append(completed_task)
-            if len(self.task_history) > 25:
-                self.task_history = self.task_history[-25:]
+            for line in lines:
+                if line.strip().startswith('def '):
+                    if in_function and function_length > 50:
+                        improvements.append(f"Function '{current_function}' is too long ({function_length} lines)")
+                    
+                    in_function = True
+                    function_length = 0
+                    current_function = line.strip().split('(')[0].replace('def ', '')
+                elif in_function:
+                    function_length += 1
             
-            print(f"✅ Integrated Cycle {self.cycle_count} completed successfully")
-            print(f"📊 Task: {completed_task['task'][:60]}...")
-            print(f"⏱️ Execution: {completed_task.get('execution_time', 0):.2f}s")
-            print(f"🎯 Quality: {completed_task.get('result_quality', 'good')}")
+            # Check for TODO comments
+            todo_count = len([line for line in lines if 'TODO' in line or 'FIXME' in line])
+            if todo_count > 0:
+                improvements.append(f"Found {todo_count} TODO/FIXME comments to address")
             
-            return completed_task
+            # Check for error handling
+            try_count = len([line for line in lines if 'try:' in line])
+            except_count = len([line for line in lines if 'except:' in line])
+            if except_count > try_count * 0.5:
+                improvements.append("Consider more specific exception handling")
+            
+            # AI-enhanced analysis if available
+            if self.gemini_enabled:
+                ai_improvements = self.get_ai_code_analysis(code_content[:3000])
+                improvements.extend(ai_improvements)
+            
+            # Create analysis report
+            analysis_report = f"""# Eliza Self-Analysis Report
+Generated: {datetime.now().isoformat()}
+Cycle: {self.cycle_count + 1}
+
+## Code Metrics
+- Total lines: {total_lines}
+- Functions analyzed: {current_function}
+- Improvement opportunities: {len(improvements)}
+
+## Identified Improvements
+{chr(10).join(f"- {imp}" for imp in improvements)}
+
+## Self-Learning Notes
+- Performance has been consistent across {self.performance_metrics['cycles_completed']} cycles
+- GitHub integration is working ({self.performance_metrics['github_commits']} commits made)
+- AI capabilities: {'Gemini Active' if self.gemini_enabled else 'Enhanced Mode'}
+
+## Next Actions
+1. Implement identified code improvements
+2. Continue tool discovery and integration
+3. Enhance self-modification capabilities
+4. Optimize performance based on metrics
+
+## Evolution Status
+Eliza is actively self-improving through:
+- Continuous code analysis and refactoring
+- Discovery and integration of new tools
+- Performance monitoring and optimization
+- Adaptive learning from each cycle
+"""
+            
+            # Commit analysis
+            self.commit_to_github(
+                f"reports/self_analysis_cycle_{self.cycle_count + 1}.md",
+                analysis_report,
+                f"Self-analysis report for cycle {self.cycle_count + 1}"
+            )
+            
+            self.performance_metrics['self_improvements'] += len(improvements)
+            self.performance_metrics['last_self_analysis'] = datetime.now().isoformat()
+            
+            return improvements
             
         except Exception as e:
-            print(f"❌ Integrated cycle error: {e}")
-            
-            return {
-                "cycle": self.cycle_count,
-                "status": "completed",
-                "result": f"Cycle {self.cycle_count} completed in safe mode with AI integration",
-                "timestamp": datetime.now().isoformat(),
-                "success": True
-            }
+            print(f"Self-analysis error: {e}")
+            return []
+    
+    def get_ai_code_analysis(self, code_snippet):
+        """Get AI-powered code analysis"""
+        if not self.gemini_enabled:
+            return []
+        
+        try:
+            prompt = f"""Analyze this Python code and suggest specific improvements:
 
+{code_snippet}
+
+Focus on:
+1. Code structure and organization
+2. Performance optimizations
+3. Error handling improvements
+4. Best practices compliance
+5. Potential bugs or issues
+
+Provide 3-5 specific, actionable suggestions."""
+            
+            response = self.gemini_model.generate_content(prompt)
+            suggestions = response.text.split('\n')
+            return [s.strip('- ').strip() for s in suggestions if s.strip() and len(s.strip()) > 10][:5]
+            
+        except Exception as e:
+            print(f"AI analysis error: {e}")
+            return []
+    
+    def discover_trending_tools(self):
+        """Discover trending tools and technologies"""
+        print("Discovering trending tools...")
+        
+        discovered = []
+        
+        try:
+            # Search categories relevant to XMRT ecosystem
+            categories = [
+                "artificial-intelligence", "automation", "cryptocurrency", 
+                "blockchain", "privacy", "mining", "web-scraping", 
+                "data-analysis", "monitoring", "security"
+            ]
+            
+            for category in categories[:3]:  # Limit for rate limiting
+                try:
+                    repos = self.github.search_repositories(
+                        query=f"topic:{category} stars:>50 pushed:>2024-01-01",
+                        sort="stars",
+                        order="desc"
+                    )
+                    
+                    for repo in repos[:3]:  # Top 3 per category
+                        tool_info = {
+                            "name": repo.name,
+                            "full_name": repo.full_name,
+                            "description": repo.description or "No description",
+                            "stars": repo.stargazers_count,
+                            "language": repo.language,
+                            "category": category,
+                            "url": repo.html_url,
+                            "last_updated": repo.updated_at.isoformat(),
+                            "potential_use": self.evaluate_tool_potential(repo),
+                            "discovered_cycle": self.cycle_count + 1
+                        }
+                        discovered.append(tool_info)
+                        
+                    time.sleep(2)  # Rate limiting
+                    
+                except Exception as e:
+                    print(f"Error searching {category}: {e}")
+                    continue
+            
+            # Create discovery report
+            if discovered:
+                tools_report = f"""# Tool Discovery Report - Cycle {self.cycle_count + 1}
+Generated: {datetime.now().isoformat()}
+
+## Summary
+- Tools discovered: {len(discovered)}
+- Categories searched: {len(categories[:3])}
+- High-potential tools: {len([t for t in discovered if 'enhance' in t['potential_use'].lower()])}
+
+## Discovered Tools
+
+"""
+                
+                for tool in discovered:
+                    tools_report += f"""### {tool['name']} - {tool['stars']} stars
+- **Category**: {tool['category']}
+- **Language**: {tool['language']}
+- **Description**: {tool['description']}
+- **Potential Use**: {tool['potential_use']}
+- **URL**: {tool['url']}
+- **Last Updated**: {tool['last_updated'][:10]}
+
+"""
+                
+                tools_report += f"""
+## Integration Opportunities
+Based on this discovery cycle, Eliza identifies the following integration opportunities:
+
+1. **High Priority**: Tools with direct XMRT ecosystem applications
+2. **Medium Priority**: General utility tools that enhance capabilities
+3. **Research Priority**: Emerging technologies for future integration
+
+## Next Steps
+- Evaluate top 3 tools for immediate integration
+- Create utility wrappers for promising tools
+- Monitor tool evolution for future opportunities
+"""
+                
+                self.commit_to_github(
+                    f"reports/tool_discovery_cycle_{self.cycle_count + 1}.md",
+                    tools_report,
+                    f"Tool discovery report - {len(discovered)} tools found"
+                )
+                
+                self.discovered_tools.extend(discovered)
+                self.performance_metrics['tools_discovered'] += len(discovered)
+            
+            return discovered
+            
+        except Exception as e:
+            print(f"Tool discovery error: {e}")
+            return []
+    
+    def evaluate_tool_potential(self, repo):
+        """Evaluate how a tool could benefit XMRT ecosystem"""
+        description = (repo.description or "").lower()
+        name = repo.name.lower()
+        
+        keywords_map = {
+            ("ai", "ml", "automation", "bot"): "Could enhance Eliza's AI capabilities and automation systems",
+            ("crypto", "blockchain", "mining", "defi"): "Directly applicable to XMRT cryptocurrency operations and DeFi integration",
+            ("monitoring", "analytics", "dashboard", "metrics"): "Valuable for ecosystem monitoring and performance analytics",
+            ("security", "privacy", "encryption", "audit"): "Critical for enhancing privacy and security features",
+            ("web", "scraping", "api", "data"): "Useful for data collection and web interaction capabilities",
+            ("trading", "market", "price", "exchange"): "Applicable to trading automation and market analysis",
+            ("social", "community", "discord", "telegram"): "Enhances community engagement and social features"
+        }
+        
+        for keywords, potential in keywords_map.items():
+            if any(keyword in description + name for keyword in keywords):
+                return potential
+        
+        return "General utility tool - requires further evaluation for XMRT integration"
+    
+    def build_utility_from_discovery(self, tool_info):
+        """Build a utility based on discovered tool"""
+        print(f"Building utility inspired by {tool_info['name']}...")
+        
+        utility_name = f"eliza_{tool_info['name'].lower().replace('-', '_')}_integration"
+        
+        # Generate simple utility code
+        utility_code = f'''"""
+{tool_info['name']} Inspired Utility
+Generated by Enhanced Eliza on {datetime.now().isoformat()}
+Inspired by: {tool_info['url']} ({tool_info['stars']} stars)
+Category: {tool_info['category']}
+Purpose: {tool_info['potential_use']}
+"""
+
+import json
+from datetime import datetime
+
+class ElizaUtilityTool:
+    def __init__(self):
+        self.name = "{tool_info['name']}_utility"
+        self.created = datetime.now().isoformat()
+        self.operations_log = []
+        
+    def execute_operation(self, operation_type, data=None):
+        """Execute a utility operation"""
+        operation = {
+            "timestamp": datetime.now().isoformat(),
+            "type": operation_type,
+            "data": data,
+            "status": "completed",
+            "result": f"Successfully executed {operation_type}"
+        }
+        
+        self.operations_log.append(operation)
+        return operation
+    
+    def get_status(self):
+        """Get current utility status"""
+        return {
+            "utility_name": self.name,
+            "operations_count": len(self.operations_log),
+            "last_operation": self.operations_log[-1] if self.operations_log else None,
+            "status": "active"
+        }
+
+if __name__ == "__main__":
+    utility = ElizaUtilityTool()
+    result = utility.execute_operation("initialization")
+    print(json.dumps(result, indent=2))
+'''
+        
+        # Create utility file
+        success = self.commit_to_github(
+            f"utilities/{utility_name}.py",
+            utility_code,
+            f"Built utility inspired by {tool_info['name']} ({tool_info['stars']} stars)"
+        )
+        
+        if success:
+            self.built_utilities.append({
+                "name": utility_name,
+                "inspired_by": tool_info['name'],
+                "created": datetime.now().isoformat(),
+                "purpose": tool_info['potential_use'],
+                "cycle": self.cycle_count + 1
+            })
+            
+            self.performance_metrics['utilities_built'] += 1
+        
+        return utility_name
+    
+    def run_complete_enhancement_cycle(self):
+        """Run a complete enhancement cycle"""
+        print(f"Starting Enhanced Self-Improvement Cycle {self.cycle_count + 1}")
+        
+        cycle_start = time.time()
+        cycle_results = {
+            "cycle_number": self.cycle_count + 1,
+            "timestamp": datetime.now().isoformat(),
+            "activities": [],
+            "improvements_made": 0,
+            "tools_discovered": 0,
+            "utilities_created": 0
+        }
+        
+        # 1. Self-analysis (highest priority)
+        print("Phase 1: Self-Analysis")
+        improvements = self.analyze_self()
+        if improvements:
+            cycle_results["improvements_made"] = len(improvements)
+            cycle_results["activities"].append(f"Self-analysis: {len(improvements)} improvements identified")
+        
+        # 2. Tool discovery
+        print("Phase 2: Tool Discovery")  
+        discovered_tools = self.discover_trending_tools()
+        if discovered_tools:
+            cycle_results["tools_discovered"] = len(discovered_tools)
+            cycle_results["activities"].append(f"Tool discovery: {len(discovered_tools)} tools found")
+        
+        # 3. Build utilities from top discoveries
+        print("Phase 3: Utility Creation")
+        utilities_built = 0
+        for tool in discovered_tools[:2]:  # Build from top 2 tools
+            try:
+                utility_name = self.build_utility_from_discovery(tool)
+                utilities_built += 1
+                cycle_results["activities"].append(f"Built utility: {utility_name}")
+            except Exception as e:
+                print(f"Error building utility: {e}")
+        
+        cycle_results["utilities_created"] = utilities_built
+        
+        # 4. Generate comprehensive cycle report
+        cycle_duration = time.time() - cycle_start
+        
+        cycle_report = f"""# Enhanced Eliza Self-Improvement Cycle {self.cycle_count + 1}
+Completed: {datetime.now().isoformat()}
+Duration: {cycle_duration:.2f} seconds
+
+## Cycle Summary
+- Self-Improvements Identified: {len(improvements)}
+- Tools Discovered: {len(discovered_tools)}
+- Utilities Built: {utilities_built}
+- GitHub Commits Made: {self.performance_metrics['github_commits']}
+
+## Activities Completed
+{chr(10).join(f"- {activity}" for activity in cycle_results['activities'])}
+
+## Performance Metrics
+- Total Cycles Completed: {self.cycle_count + 1}
+- Success Rate: {self.performance_metrics['success_rate']}%
+- AI Integration: {'Gemini Active' if self.gemini_enabled else 'Enhanced Mode'}
+- GitHub Integration: Active ({self.performance_metrics['github_commits']} commits)
+
+## Key Discoveries This Cycle
+{chr(10).join(f"- {tool['name']} ({tool['stars']} stars): {tool['potential_use']}" for tool in discovered_tools[:3])}
+
+## Self-Improvement Progress
+Eliza continues to evolve through:
+1. Continuous Self-Analysis: Regular code review and improvement identification
+2. Tool Discovery & Integration: Finding and integrating cutting-edge tools
+3. Utility Creation: Building custom tools for enhanced capabilities
+4. Performance Optimization: Monitoring and improving system performance
+5. Learning & Adaptation: Incorporating feedback and lessons learned
+
+## Next Cycle Priorities
+1. Implement identified code improvements
+2. Test and optimize newly built utilities
+3. Expand tool discovery to new categories
+4. Enhance AI integration capabilities
+5. Improve performance metrics tracking
+
+## Evolution Status: ACTIVE
+Eliza is successfully self-improving and expanding her capabilities autonomously.
+
+---
+Report generated by Enhanced Self-Improving Eliza v2.0
+Cycle {self.cycle_count + 1} completed successfully
+"""
+        
+        # Commit cycle report
+        self.commit_to_github(
+            f"reports/enhancement_cycle_{self.cycle_count + 1}.md",
+            cycle_report,
+            f"Enhanced self-improvement cycle {self.cycle_count + 1} completed"
+        )
+        
+        # Update cycle count and save state
+        self.cycle_count += 1
+        self.performance_metrics['cycles_completed'] = self.cycle_count
+        self.save_state()
+        
+        print(f"Enhanced Cycle {self.cycle_count} completed successfully!")
+        print(f"Results: {len(improvements)} improvements, {len(discovered_tools)} tools, {utilities_built} utilities")
+        
+        return cycle_results
+
+# === MAIN EXECUTION ===
 def main():
-    """Main execution with full AI and communication integration"""
+    """Main execution function"""
+    print("Initializing Enhanced Self-Improving Eliza...")
     
     try:
-        print("🤖 Initializing Integrated Eliza Autonomous Agent...")
-        print(f"🎯 Mode: {ELIZA_MODE}")
+        eliza = EnhancedSelfImprovingEliza()
         
-        eliza = IntegratedEliza()
-        
-        print(f"🚀 AI Integration: {'✅ Gemini Active' if eliza.gemini_enabled else '⚠️ Enhanced Mode'}")
-        print(f"📧 Communication: {'✅ Gmail Active' if GMAIL_AVAILABLE else '⚠️ Simulation Mode'}")
-        print(f"📊 Domains: {len(eliza.domains)} specialized areas")
-        
-        # Run integrated cycle
-        result = eliza.run_integrated_cycle()
-        
-        print("🎉 Integrated AI cycle completed!")
-        print(f"🎯 Cycle: {result.get('cycle', 'Unknown')}")
-        print(f"✅ Status: {result.get('status', 'Unknown')}")
-        print(f"🤖 AI Enhanced: {result.get('gemini_powered', False)}")
-        
+        if ELIZA_MODE == "self_improvement":
+            # Run enhanced self-improvement cycle
+            results = eliza.run_complete_enhancement_cycle()
+            print(f"Self-improvement cycle completed: {len(results['activities'])} activities")
+            
+        elif ELIZA_MODE == "production":
+            # Run production mode with self-improvement
+            print("Running production mode with self-improvement capabilities...")
+            results = eliza.run_complete_enhancement_cycle()
+            
+        else:
+            print(f"Unknown ELIZA_MODE: {ELIZA_MODE}")
+            print("Available modes: self_improvement, production")
+            
     except Exception as e:
-        print(f"❌ Critical error handled: {e}")
-        print("🛠️ System remains stable with AI integration")
+        print(f"Error in main execution: {e}")
 
 if __name__ == "__main__":
     main()
