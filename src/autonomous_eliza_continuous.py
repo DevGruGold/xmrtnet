@@ -440,7 +440,7 @@ class ElizaUtilityTool:
             "type": operation_type,
             "data": data,
             "status": "completed",
-            "result": f"Successfully executed {operation_type}"
+            "result": "Successfully executed " + operation_type
         }
         
         self.operations_log.append(operation)
