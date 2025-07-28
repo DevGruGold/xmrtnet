@@ -230,7 +230,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
             f"{domain.title()} operations completed - task processed successfully"
         ]
         return True, random.choice(success_messages)
-cycle_count = CYCLE_COUNT_START\1
+cycle_count = CYCLE_COUNT_START + 1
                 # --- PRODUCTIVE WORK OVERRIDE ---
                 # This section replaces the original fake cycle logic with real tasks.
                 
