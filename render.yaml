@@ -1,0 +1,62 @@
+
+# Render YAML configuration for XMRT DAO with Eliza AI
+services:
+  # Frontend Service
+  - type: web
+    name: xmrt-eliza-frontend
+    runtime: node
+    buildCommand: cd frontend/xmrt-dao-frontend && pnpm install && pnpm run build
+    startCommand: cd frontend/xmrt-dao-frontend && npx serve -s dist -l $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: 18
+      - key: PNPM_VERSION
+        value: 10.4.1
+      - fromGroup: xmrt-env-group
+
+  # AI Automation Service (Eliza)
+  - type: web
+    name: xmrt-eliza-ai
+    runtime: python
+    buildCommand: pip install -r backend/ai-automation-service/requirements.txt
+    startCommand: cd backend && python -m ai-automation-service.main
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - fromGroup: xmrt-env-group
+
+  # Main Backend API
+  - type: web
+    name: xmrt-backend-api
+    runtime: python
+    buildCommand: pip install -r backend/xmrt-dao-backend/requirements.txt
+    startCommand: cd backend && python -m xmrt-dao-backend.src.main
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - fromGroup: xmrt-env-group
+
+# Environment Variable Group
+envVarGroups:
+  - name: xmrt-env-group
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ETHEREUM_RPC_URL
+        sync: false
+      - key: WALLET_CONNECT_PROJECT_ID
+        sync: false
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_MOCK_API
+        value: true
+      - key: DATABASE_URL
+        sync: false
+      - key: MAX_AUTONOMOUS_VALUE
+        value: 10000
+      - key: CONFIDENCE_THRESHOLD
+        value: 0.8
+      - key: EMERGENCY_THRESHOLD
+        value: 0.95
