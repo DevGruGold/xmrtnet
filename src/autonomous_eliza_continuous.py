@@ -57,7 +57,7 @@ class ElizaAutonomousSystem:
                     content=content.encode('utf-8'),
                     sha=existing_file.sha,
                     branch="main",
-                    author={"name": "Eliza Autonomous", "email": "eliza@xmrt.io"},
+                    author={"name": "Eliza Autonomous", "email": "joeyleepcs@gmail.com"},
                     committer={"name": self.github_username, "email": f"{self.github_username}@users.noreply.github.com"}
                 )
             except:
