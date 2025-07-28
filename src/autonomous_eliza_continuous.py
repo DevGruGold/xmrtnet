@@ -247,7 +247,7 @@ def do_real_task(domain, task, repo_obj, cycle_count):
     ]
 
     # Create a commit message that reflects the real work
-        commit_message = f"📝 Productive Task: Generated {current_task['output_file']}"
+    commit_message = f"📝 Productive Task: Generated {current_task['output_file']}"
 
     # This is where Eliza would generate the real report content
         file_content = f"""# {current_task['name']} Report
