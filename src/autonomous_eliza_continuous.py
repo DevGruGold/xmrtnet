@@ -231,18 +231,18 @@ def do_real_task(domain, task, repo_obj, cycle_count):
         ]
         return True, random.choice(success_messages)
 cycle_count = CYCLE_COUNT_START + 1
-                # --- PRODUCTIVE WORK OVERRIDE ---
-                # This section replaces the original fake cycle logic with real tasks.
-                
-                print("🚀 Starting productive work phase...")
-                
-                productive_tasks = [
-                    {"name": "Ecosystem Audit", "output_file": "ECOSYSTEM_AUDIT_REPORT.md", "description": "Analyzing all XMRT repositories and their inter-dependencies."},
-                    {"name": "Schema Analysis", "output_file": "SCHEMA_ANALYSIS_REPORT.md", "description": "Documenting current database schema status and identifying gaps."},
-                    {"name": "Security Assessment", "output_file": "SECURITY_ASSESSMENT.md", "description": "Performing a preliminary scan for vulnerabilities and documenting findings."},
-                    {"name": "API Documentation", "output_file": "API_DOCUMENTATION.md", "description": "Documenting all known public API endpoints for the XMRT ecosystem."}
-                ]
-                
+    # --- PRODUCTIVE WORK OVERRIDE ---
+    # This section replaces the original fake cycle logic with real tasks.
+
+    print("🚀 Starting productive work phase...")
+
+    productive_tasks = [
+    {"name": "Ecosystem Audit", "output_file": "ECOSYSTEM_AUDIT_REPORT.md", "description": "Analyzing all XMRT repositories and their inter-dependencies."},
+    {"name": "Schema Analysis", "output_file": "SCHEMA_ANALYSIS_REPORT.md", "description": "Documenting current database schema status and identifying gaps."},
+    {"name": "Security Assessment", "output_file": "SECURITY_ASSESSMENT.md", "description": "Performing a preliminary scan for vulnerabilities and documenting findings."},
+    {"name": "API Documentation", "output_file": "API_DOCUMENTATION.md", "description": "Documenting all known public API endpoints for the XMRT ecosystem."}
+    ]
+
                 # Execute one productive task per cycle
                 current_task = productive_tasks[self.cycle_count % len(productive_tasks)]
                 
