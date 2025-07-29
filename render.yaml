@@ -1,6 +1,6 @@
 services:
 - type: worker
-  name: eliza-truly-continuous
+  name: eliza-with-feedback
   env: python
   plan: starter
   buildCommand: echo "Forcing clean build at 2025-07-27T05:26:18.187321" && pip install
