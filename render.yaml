@@ -8,10 +8,10 @@ services:
   startCommand: python autonomous_cycle_with_feedback.py
   envVars:
   - key: GITHUB_TOKEN
-    sync: false
+    sync: true
   - key: GITHUB_REPO
     value: DevGruGold/xmrtnet
   - key: CHECK_INTERVAL
     value: '300'
-  autoDeploy: false
+  autoDeploy: true
   branch: main
