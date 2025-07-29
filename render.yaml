@@ -5,7 +5,7 @@ services:
   plan: starter
   buildCommand: echo "Forcing clean build at 2025-07-27T05:26:18.187321" && pip install
     -r requirements.txt
-  startCommand: python src/eliza_bulletproof.py
+  startCommand: python/eliza_truly_continuous.py
   envVars:
   - key: GITHUB_TOKEN
     sync: false
