@@ -6,6 +6,7 @@ import './App.css';
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import Activity from './components/Activity';
+import ElizaActivity from './components/ElizaActivity';
 import Banking from './components/Banking';
 import Terminal from './components/Terminal';
 import Assets from './components/Assets';
@@ -31,6 +32,8 @@ function AppContent() {
         return <Dashboard />;
       case 'activity':
         return <Activity />;
+      case 'eliza':
+        return <ElizaActivity />;
       case 'banking':
         return <Banking />;
       case 'terminal':
