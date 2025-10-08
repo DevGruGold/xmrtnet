@@ -177,3 +177,135 @@ def eliza_health():
         "openrouter_configured": bool(OPENROUTER_API_KEY),
         "version": "enhanced-ai-v2"
     })
+
+
+@eliza_bp.route('/eliza/activity', methods=['GET'])
+def get_eliza_activity():
+    """Get recent Eliza activity from GitHub repository"""
+    try:
+        from github import Github, Auth
+        
+        github_token = os.getenv('GITHUB_TOKEN')
+        if not github_token:
+            return jsonify({
+                "error": "GitHub token not configured",
+                "activities": []
+            }), 500
+        
+        # Initialize GitHub client
+        github = Github(auth=Auth.Token(github_token))
+        repo = github.get_user('DevGruGold').get_repo('xmrtnet')
+        
+        # Get recent commits by Eliza
+        activities = []
+        commits = repo.get_commits(author='eliza@xmrt.io')[:20]  # Last 20 commits
+        
+        for commit in commits:
+            activity = {
+                "type": "commit",
+                "message": commit.commit.message,
+                "timestamp": commit.commit.author.date.isoformat(),
+                "sha": commit.sha[:8],
+                "url": commit.html_url,
+                "files_changed": len(commit.files) if commit.files else 0
+            }
+            
+            # Categorize activity type based on commit message
+            message_lower = commit.commit.message.lower()
+            if "self-analysis" in message_lower or "self-improvement" in message_lower:
+                activity["category"] = "self_improvement"
+                activity["icon"] = "🧠"
+            elif "tool discovery" in message_lower or "tools found" in message_lower:
+                activity["category"] = "tool_discovery"
+                activity["icon"] = "🔍"
+            elif "utility" in message_lower or "built" in message_lower:
+                activity["category"] = "utility_creation"
+                activity["icon"] = "🛠️"
+            elif "cycle" in message_lower:
+                activity["category"] = "cycle_completion"
+                activity["icon"] = "🔄"
+            else:
+                activity["category"] = "general"
+                activity["icon"] = "📝"
+            
+            activities.append(activity)
+        
+        # Get current state from eliza_state.json
+        try:
+            state_file = repo.get_contents("eliza_state.json")
+            state_data = json.loads(state_file.decoded_content.decode())
+            
+            return jsonify({
+                "status": "success",
+                "activities": activities,
+                "state": {
+                    "cycle_count": state_data.get('cycle_count', 0),
+                    "last_run": state_data.get('last_run'),
+                    "total_improvements": state_data.get('total_improvements', 0),
+                    "total_tools_discovered": state_data.get('total_tools_discovered', 0),
+                    "total_utilities_built": state_data.get('total_utilities_built', 0)
+                }
+            })
+        except Exception as e:
+            print(f"Error fetching state: {e}")
+            return jsonify({
+                "status": "success",
+                "activities": activities,
+                "state": None
+            })
+        
+    except Exception as e:
+        print(f"Error fetching activity: {e}")
+        return jsonify({
+            "error": str(e),
+            "activities": []
+        }), 500
+
+@eliza_bp.route('/eliza/stats', methods=['GET'])
+def get_eliza_stats():
+    """Get Eliza performance statistics"""
+    try:
+        from github import Github, Auth
+        
+        github_token = os.getenv('GITHUB_TOKEN')
+        if not github_token:
+            return jsonify({"error": "GitHub token not configured"}), 500
+        
+        github = Github(auth=Auth.Token(github_token))
+        repo = github.get_user('DevGruGold').get_repo('xmrtnet')
+        
+        # Get state
+        state_file = repo.get_contents("eliza_state.json")
+        state_data = json.loads(state_file.decoded_content.decode())
+        
+        # Count reports
+        reports_dir = repo.get_contents("reports")
+        report_files = [f for f in reports_dir if f.name.endswith('.md')]
+        
+        # Count utilities
+        utilities_dir = repo.get_contents("utilities")
+        utility_files = [f for f in utilities_dir if f.name.endswith('.py')]
+        
+        # Get recent commits count
+        commits = list(repo.get_commits(author='eliza@xmrt.io')[:100])
+        
+        return jsonify({
+            "status": "success",
+            "stats": {
+                "cycle_count": state_data.get('cycle_count', 0),
+                "total_commits": len(commits),
+                "total_reports": len(report_files),
+                "total_utilities": len(utility_files),
+                "total_improvements": state_data.get('total_improvements', 0),
+                "total_tools_discovered": state_data.get('total_tools_discovered', 0),
+                "last_run": state_data.get('last_run'),
+                "uptime_status": "active" if state_data.get('last_run') else "initializing"
+            }
+        })
+        
+    except Exception as e:
+        print(f"Error fetching stats: {e}")
+        return jsonify({
+            "error": str(e),
+            "stats": {}
+        }), 500
