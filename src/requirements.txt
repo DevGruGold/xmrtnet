@@ -10,16 +10,16 @@ fastapi>=0.104.0
 uvicorn>=0.24.0
 
 # XMRT Langchain Memory Integration
-Install from: git+https://github.com/DevGruGold/xmrt-langchain-memory.git
-Install from: git+https://github.com/DevGruGold/xmrt-langchain-memory.git
+# Install from: git+https://github.com/DevGruGold/xmrt-langchain-memory.git
+# Install from: git+https://github.com/DevGruGold/xmrt-langchain-memory.git
 langchain>=0.1.0
 langchain-openai>=0.0.5
 langchain-community>=0.0.20
 langchain-experimental>=0.0.50
 
 # XMRT Langflow Integration  
-Install from: git+https://github.com/DevGruGold/xmrt-langflow-competition.git
-Install from: git+https://github.com/DevGruGold/xmrt-langflow-competition.git
+# Install from: git+https://github.com/DevGruGold/xmrt-langflow-competition.git
+# Install from: git+https://github.com/DevGruGold/xmrt-langflow-competition.git
 langflow>=0.6.19
 langflow-base>=0.0.50
 
