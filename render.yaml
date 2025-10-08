@@ -1,17 +1,40 @@
 services:
-- type: worker
-  name: eliza-with-feedback
+# Flask API Web Service
+- type: web
+  name: xmrt-flask-api
   env: python
   plan: starter
-  buildCommand: echo "Forcing clean build at 2025-07-27T05:26:18.187321" && pip install
-    -r requirements.txt
-  startCommand: python autonomous_cycle_with_feedback.py
+  buildCommand: pip install -r backend/xmrt-dao-backend/requirements.txt
+  startCommand: cd backend/xmrt-dao-backend && python src/main.py
+  envVars:
+  - key: PORT
+    value: '10000'
+  - key: OPENROUTER_API_KEY
+    sync: false
+  - key: SECRET_KEY
+    generateValue: true
+  - key: GITHUB_TOKEN
+    sync: false
+  autoDeploy: true
+  branch: main
+
+# Eliza Self-Improvement Worker
+- type: worker
+  name: eliza-self-improvement
+  env: python
+  plan: starter
+  buildCommand: pip install -r requirements.txt
+  startCommand: python src/autonomous_eliza_continuous.py
   envVars:
   - key: GITHUB_TOKEN
-    sync: true
-  - key: GITHUB_REPO
-    value: DevGruGold/xmrtnet
-  - key: CHECK_INTERVAL
-    value: '300'
+    sync: false
+  - key: GITHUB_USER
+    value: DevGruGold
+  - key: TARGET_REPO
+    value: xmrtnet
+  - key: ELIZA_MODE
+    value: self_improvement
+  - key: GEMINI_API_KEY
+    sync: false
   autoDeploy: true
   branch: main
