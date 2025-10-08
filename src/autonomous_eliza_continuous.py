@@ -2,7 +2,7 @@ import os
 import time
 import random
 import requests
-from github import Github, InputGitAuthor
+from github import Github, InputGitAuthor, Auth
 import sys
 from datetime import datetime
 import json
@@ -54,8 +54,8 @@ except ImportError:
 
 class EnhancedSelfImprovingEliza:
     def __init__(self):
-        # Initialize GitHub
-        self.github = Github(GITHUB_TOKEN)
+        # Initialize GitHub with new Auth method
+        self.github = Github(auth=Auth.Token(GITHUB_TOKEN))
         self.repo = self.github.get_user(GITHUB_USER).get_repo(TARGET_REPO)
         
         # Load persistent state
