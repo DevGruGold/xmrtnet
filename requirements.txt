@@ -1,5 +1,3 @@
-requests
-PyGithub
-PyYAML
-Flask
-gunicorn
+PyGithub>=2.1.1
+google-generativeai>=0.3.0
+requests>=2.31.0
