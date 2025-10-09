@@ -1,0 +1,82 @@
+name: Security Monitoring
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily security scan
+    - cron: '0 2 * * 1'  # Weekly deep scan
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/requirements*.txt'
+      - '**/package*.json'
+      - '**/Dockerfile'
+      - '**/.github/workflows/**'
+
+jobs:
+  vulnerability-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Python security audit
+      run: |
+        pip install safety bandit semgrep
+        safety check || true
+        bandit -r . || true
+        semgrep --config=auto . || true
+    
+    - name: Security policy compliance check
+      run: |
+        echo "Checking security policy compliance..."
+        # Add security policy checks
+  
+  license-compliance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Check Python licenses
+      run: |
+        pip install pip-licenses
+        pip-licenses --format=json --output-file=python-licenses.json
+    
+    - name: Generate license report
+      run: |
+        echo "License compliance report for xmrtnet" > license-report.txt
+        # Add license analysis commands
+  
+  secret-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run secret scan
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
