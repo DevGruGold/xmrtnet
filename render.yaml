@@ -18,22 +18,31 @@ services:
   autoDeploy: true
   branch: main
 
-# Eliza Self-Improvement Worker
-- type: worker
-  name: eliza-self-improvement
+# Eliza Autonomous Agent Web Service (24/7 Mode)
+- type: web
+  name: eliza-autonomous-agent
   env: python
   plan: starter
   buildCommand: pip install -r requirements.txt
-  startCommand: python src/autonomous_eliza_continuous.py
+  startCommand: gunicorn app.main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+  healthCheckPath: /api/health
   envVars:
+  - key: PORT
+    value: '10001'
   - key: GITHUB_TOKEN
     sync: false
   - key: GITHUB_USER
     value: DevGruGold
   - key: TARGET_REPO
     value: xmrtnet
+  - key: ECOSYSTEM_REPO
+    value: XMRT-Ecosystem
   - key: ELIZA_MODE
-    value: self_improvement
+    value: continuous_24_7
+  - key: CYCLE_INTERVAL
+    value: '3600'
+  - key: MAX_CYCLES
+    value: '0'
   - key: GEMINI_API_KEY
     sync: false
   autoDeploy: true
