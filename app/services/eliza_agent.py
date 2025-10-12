@@ -14,9 +14,17 @@ import traceback
 from collections import defaultdict
 import threading
 
+# Import MCP integration for inter-agent communication
+try:
+    from app.services.mcp_integration import MCPIntegration
+    MCP_AVAILABLE = True
+except ImportError:
+    MCP_AVAILABLE = False
+    print("Warning: MCP integration not available")
+
 
 class ElizaAgent:
-    """Core autonomous agent with 24/7 capabilities"""
+    """Core autonomous agent with 24/7 capabilities and MCP inter-agent communication"""
     
     def __init__(self):
         # GitHub configuration
@@ -33,6 +41,9 @@ class ElizaAgent:
         # AI configuration
         self.gemini_api_key = os.getenv('GEMINI_API_KEY')
         
+        # MCP configuration
+        self.mcp_enabled = os.getenv('MCP_ENABLED', 'true').lower() == 'true'
+        
         # State
         self.is_running = False
         self.current_cycle = 0
@@ -48,10 +59,14 @@ class ElizaAgent:
             'utilities_built': 0,
             'github_commits': 0,
             'ecosystem_commits': 0,
+            'mcp_messages_sent': 0,
+            'mcp_messages_received': 0,
+            'mcp_discoveries_shared': 0,
             'uptime_start': None,
             'last_cycle_time': None,
             'last_cycle_duration': 0,
-            'status': 'stopped'
+            'status': 'stopped',
+            'mcp_status': 'disabled'
         }
         
         # Activity log
@@ -61,6 +76,7 @@ class ElizaAgent:
         # Initialize connections
         self._initialize_github()
         self._initialize_ai()
+        self._initialize_mcp()
     
     def _initialize_github(self):
         """Initialize GitHub connections"""
@@ -105,6 +121,36 @@ class ElizaAgent:
             self.gemini_model = None
             self.gemini_enabled = False
             self.log('warning', f'AI initialization failed: {e}')
+    
+    def _initialize_mcp(self):
+        """Initialize MCP integration for inter-agent communication"""
+        try:
+            if self.mcp_enabled and MCP_AVAILABLE:
+                self.mcp = MCPIntegration()
+                # Register this agent with MCP backend
+                if self.mcp.register_agent():
+                    self.metrics['mcp_status'] = 'connected'
+                    self.log('success', 'MCP integration initialized - connected to Supabase backend')
+                    
+                    # List other active agents
+                    active_agents = self.mcp.list_active_agents()
+                    if active_agents:
+                        agent_names = [a.get('agent_id', 'unknown') for a in active_agents]
+                        self.log('info', f'Found {len(active_agents)} active Eliza agents: {", ".join(agent_names)}')
+                else:
+                    self.metrics['mcp_status'] = 'connection_failed'
+                    self.log('warning', 'MCP registration failed')
+            else:
+                self.mcp = None
+                self.metrics['mcp_status'] = 'disabled'
+                if not self.mcp_enabled:
+                    self.log('info', 'MCP integration disabled')
+                elif not MCP_AVAILABLE:
+                    self.log('warning', 'MCP integration not available')
+        except Exception as e:
+            self.mcp = None
+            self.metrics['mcp_status'] = 'error'
+            self.log('error', f'MCP initialization failed: {e}')
     
     def log(self, level, message):
         """Add entry to activity log"""
@@ -213,14 +259,21 @@ class ElizaAgent:
         self.log('info', 'Agent loop stopped')
     
     def _run_enhancement_cycle(self):
-        """Run a complete enhancement cycle"""
+        """Run a complete enhancement cycle with MCP communication"""
         results = {
             'cycle': self.current_cycle,
             'improvements': 0,
             'ecosystem_improvements': 0,
             'tools': 0,
-            'utilities': 0
+            'utilities': 0,
+            'mcp_messages': 0,
+            'mcp_discoveries': 0
         }
+        
+        # Phase 0: MCP - Check messages from other agents
+        if self.mcp and self.metrics['mcp_status'] == 'connected':
+            self.log('info', 'Phase 0: Checking MCP messages')
+            self._process_mcp_messages()
         
         # Phase 1: Self-analysis
         self.log('info', 'Phase 1: Self-analysis')
@@ -241,14 +294,40 @@ class ElizaAgent:
         results['tools'] = len(tools)
         self.metrics['tools_discovered'] += len(tools)
         
+        # Phase 3.5: MCP - Share tool discoveries with other agents
+        if self.mcp and self.metrics['mcp_status'] == 'connected' and tools:
+            self.log('info', 'Phase 3.5: Sharing discoveries via MCP')
+            for tool in tools[:3]:  # Share top 3 tools
+                if self.mcp.share_discovery('tool', tool):
+                    results['mcp_discoveries'] += 1
+                    self.metrics['mcp_discoveries_shared'] += 1
+        
         # Phase 4: Build utilities
         self.log('info', 'Phase 4: Utility creation')
         utilities = self._build_utilities(tools[:2])
         results['utilities'] = len(utilities)
         self.metrics['utilities_built'] += len(utilities)
         
+        # Phase 4.5: MCP - Get shared discoveries from other agents
+        if self.mcp and self.metrics['mcp_status'] == 'connected':
+            self.log('info', 'Phase 4.5: Getting shared discoveries from MCP')
+            shared_discoveries = self.mcp.get_shared_discoveries()
+            if shared_discoveries:
+                self.log('info', f'Received {len(shared_discoveries)} discoveries from other agents')
+                results['mcp_discoveries'] += len(shared_discoveries)
+        
         # Phase 5: Generate report
         self._generate_cycle_report(results)
+        
+        # Phase 6: MCP - Broadcast status
+        if self.mcp and self.metrics['mcp_status'] == 'connected':
+            self.log('info', 'Phase 6: Broadcasting status via MCP')
+            status_data = {
+                'cycle': self.current_cycle,
+                'metrics': self.metrics,
+                'results': results
+            }
+            self.mcp.broadcast_status(status_data)
         
         return results
     
@@ -399,6 +478,83 @@ Generated: {datetime.now().isoformat()}
             
         except Exception as e:
             self.log('error', f'Report generation error: {e}')
+    
+    def _process_mcp_messages(self):
+        """Process messages from other Eliza agents via MCP"""
+        try:
+            messages = self.mcp.receive_messages()
+            
+            for msg in messages:
+                from_agent = msg.get('from_agent', 'unknown')
+                msg_type = msg.get('message_type', 'unknown')
+                content = msg.get('content', {})
+                
+                self.log('info', f'MCP message from {from_agent}: {msg_type}')
+                self.metrics['mcp_messages_received'] += 1
+                
+                # Handle different message types
+                if msg_type == 'assistance_request':
+                    self._handle_assistance_request(from_agent, content)
+                elif msg_type == 'discovery_share':
+                    self._handle_discovery_share(from_agent, content)
+                elif msg_type == 'task_coordination':
+                    self._handle_task_coordination(from_agent, content)
+                elif msg_type == 'status_update':
+                    self.log('info', f'Status from {from_agent}: {content.get("status", "unknown")}')
+                
+        except Exception as e:
+            self.log('error', f'MCP message processing error: {e}')
+    
+    def _handle_assistance_request(self, from_agent, content):
+        """Handle assistance request from another agent"""
+        try:
+            request_type = content.get('type', 'unknown')
+            self.log('info', f'Assistance request from {from_agent}: {request_type}')
+            
+            # Send acknowledgment
+            response = {
+                'type': 'assistance_response',
+                'request_type': request_type,
+                'status': 'acknowledged',
+                'message': f'Eliza-xmrtnet received your request'
+            }
+            self.mcp.send_message(from_agent, 'assistance_response', response)
+            self.metrics['mcp_messages_sent'] += 1
+            
+        except Exception as e:
+            self.log('error', f'Assistance handling error: {e}')
+    
+    def _handle_discovery_share(self, from_agent, content):
+        """Handle discovery shared by another agent"""
+        try:
+            discovery_type = content.get('type', 'unknown')
+            self.log('info', f'Discovery from {from_agent}: {discovery_type}')
+            
+            # Log the discovery for potential use
+            discovery_data = content.get('data', {})
+            self.log('info', f'Shared discovery data: {str(discovery_data)[:100]}...')
+            
+        except Exception as e:
+            self.log('error', f'Discovery handling error: {e}')
+    
+    def _handle_task_coordination(self, from_agent, content):
+        """Handle task coordination request"""
+        try:
+            task_type = content.get('task_type', 'unknown')
+            self.log('info', f'Task coordination from {from_agent}: {task_type}')
+            
+            # Send acknowledgment
+            response = {
+                'type': 'task_response',
+                'task_type': task_type,
+                'status': 'accepted',
+                'message': f'Eliza-xmrtnet will participate in {task_type}'
+            }
+            self.mcp.send_message(from_agent, 'task_response', response)
+            self.metrics['mcp_messages_sent'] += 1
+            
+        except Exception as e:
+            self.log('error', f'Task coordination error: {e}')
     
     def _commit_file(self, filename, content, message):
         """Commit file to GitHub"""
