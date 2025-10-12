@@ -45,5 +45,7 @@ services:
     value: '0'
   - key: GEMINI_API_KEY
     sync: false
+  - key: MCP_ENABLED
+    value: 'true'
   autoDeploy: true
   branch: main
