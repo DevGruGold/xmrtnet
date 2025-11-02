@@ -1,1 +1,82 @@
-bmFtZTogU2VjdXJpdHkgTW9uaXRvcmluZwoKb246CiAgc2NoZWR1bGU6CiAgICAtIGNyb246ICcwIDIgKiAqIConICAjIERhaWx5IHNlY3VyaXR5IHNjYW4KICAgIC0gY3JvbjogJzAgMiAqICogMScgICMgV2Vla2x5IGRlZXAgc2NhbgogIHdvcmtmbG93X2Rpc3BhdGNoOgogIHB1c2g6CiAgICBwYXRoczoKICAgICAgLSAnKiovcmVxdWlyZW1lbnRzKi50eHQnCiAgICAgIC0gJyoqL3BhY2thZ2UqLmpzb24nCiAgICAgIC0gJyoqL0RvY2tlcmZpbGUnCiAgICAgIC0gJyoqLy5naXRodWIvd29ya2Zsb3dzLyoqJwoKcGVybWlzc2lvbnM6CiAgY29udGVudHM6IHJlYWQKICBwdWxsLXJlcXVlc3RzOiB3cml0ZQogIHNlY3VyaXR5LWV2ZW50czogd3JpdGUKCmpvYnM6CiAgdnVsbmVyYWJpbGl0eS1zY2FuOgogICAgcnVucy1vbjogdWJ1bnR1LWxhdGVzdAogICAgCiAgICBzdGVwczoKICAgIC0gbmFtZTogQ2hlY2tvdXQgY29kZQogICAgICB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY0CiAgICAKICAgIC0gbmFtZTogUnVuIFRyaXZ5IHZ1bG5lcmFiaWxpdHkgc2Nhbm5lcgogICAgICB1c2VzOiBhcXVhc2VjdXJpdHkvdHJpdnktYWN0aW9uQG1hc3RlcgogICAgICB3aXRoOgogICAgICAgIHNjYW4tdHlwZTogJ2ZzJwogICAgICAgIHNjYW4tcmVmOiAnLicKICAgICAgICBmb3JtYXQ6ICdzYXJpZicKICAgICAgICBvdXRwdXQ6ICd0cml2eS1yZXN1bHRzLnNhcmlmJwogICAgCiAgICAtIG5hbWU6IFVwbG9hZCBUcml2eSBzY2FuIHJlc3VsdHMgdG8gR2l0SHViIFNlY3VyaXR5IHRhYgogICAgICB1c2VzOiBnaXRodWIvY29kZXFsLWFjdGlvbi91cGxvYWQtc2FyaWZAdjIKICAgICAgd2l0aDoKICAgICAgICBzYXJpZl9maWxlOiAndHJpdnktcmVzdWx0cy5zYXJpZicKICAgIAogICAgLSBuYW1lOiBQeXRob24gc2VjdXJpdHkgYXVkaXQKICAgICAgcnVuOiB8CiAgICAgICAgcGlwIGluc3RhbGwgc2FmZXR5IGJhbmRpdCBzZW1ncmVwCiAgICAgICAgc2FmZXR5IGNoZWNrIHx8IHRydWUKICAgICAgICBiYW5kaXQgLXIgLiB8fCB0cnVlCiAgICAgICAgc2VtZ3JlcCAtLWNvbmZpZz1hdXRvIC4gfHwgdHJ1ZQogICAgCiAgICAtIG5hbWU6IFNlY3VyaXR5IHBvbGljeSBjb21wbGlhbmNlIGNoZWNrCiAgICAgIHJ1bjogfAogICAgICAgIGVjaG8gIkNoZWNraW5nIHNlY3VyaXR5IHBvbGljeSBjb21wbGlhbmNlLi4uIgogICAgICAgICMgQWRkIHNlY3VyaXR5IHBvbGljeSBjaGVja3MKICAKICBsaWNlbnNlLWNvbXBsaWFuY2U6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CiAgICAKICAgIHN0ZXBzOgogICAgLSBuYW1lOiBDaGVja291dCBjb2RlCiAgICAgIHVzZXM6IGFjdGlvbnMvY2hlY2tvdXRAdjQKICAgIAogICAgLSBuYW1lOiBTZXR1cCBQeXRob24KICAgICAgdXNlczogYWN0aW9ucy9zZXR1cC1weXRob25AdjQKICAgICAgd2l0aDoKICAgICAgICBweXRob24tdmVyc2lvbjogJzMuMTEnCiAgICAKICAgIC0gbmFtZTogQ2hlY2sgUHl0aG9uIGxpY2Vuc2VzCiAgICAgIHJ1bjogfAogICAgICAgIHBpcCBpbnN0YWxsIHBpcC1saWNlbnNlcwogICAgICAgIHBpcC1saWNlbnNlcyAtLWZvcm1hdD1qc29uIC0tb3V0cHV0LWZpbGU9cHl0aG9uLWxpY2Vuc2VzLmpzb24KICAgIAogICAgLSBuYW1lOiBHZW5lcmF0ZSBsaWNlbnNlIHJlcG9ydAogICAgICBydW46IHwKICAgICAgICBlY2hvICJMaWNlbnNlIGNvbXBsaWFuY2UgcmVwb3J0IGZvciB4bXJ0bmV0IiA+IGxpY2Vuc2UtcmVwb3J0LnR4dAogICAgICAgICMgQWRkIGxpY2Vuc2UgYW5hbHlzaXMgY29tbWFuZHMKICAKICBzZWNyZXQtc2NhbjoKICAgIHJ1bnMtb246IHVidW50dS1sYXRlc3QKICAgIAogICAgc3RlcHM6CiAgICAtIG5hbWU6IENoZWNrb3V0IGNvZGUKICAgICAgdXNlczogYWN0aW9ucy9jaGVja291dEB2NAogICAgCiAgICAtIG5hbWU6IFJ1biBzZWNyZXQgc2NhbgogICAgICB1c2VzOiB0cnVmZmxlc2VjdXJpdHkvdHJ1ZmZsZWhvZ0BtYWluCiAgICAgIHdpdGg6CiAgICAgICAgcGF0aDogLi8KICAgICAgICBiYXNlOiAke3sgZ2l0aHViLmV2ZW50LnJlcG9zaXRvcnkuZGVmYXVsdF9icmFuY2ggfX0KICAgICAgICBoZWFkOiBIRUFECg==
+name: Security Monitoring
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily security scan
+    - cron: '0 2 * * 1'  # Weekly deep scan
+  workflow_dispatch:
+  push:
+    paths:
+      - '**/requirements*.txt'
+      - '**/package*.json'
+      - '**/Dockerfile'
+      - '**/.github/workflows/**'
+
+jobs:
+  vulnerability-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+    
+    - name: Python security audit
+      run: |
+        pip install safety bandit semgrep
+        safety check || true
+        bandit -r . || true
+        semgrep --config=auto . || true
+    
+    - name: Security policy compliance check
+      run: |
+        echo "Checking security policy compliance..."
+        # Add security policy checks
+  
+  license-compliance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Check Python licenses
+      run: |
+        pip install pip-licenses
+        pip-licenses --format=json --output-file=python-licenses.json
+    
+    - name: Generate license report
+      run: |
+        echo "License compliance report for xmrtnet" > license-report.txt
+        # Add license analysis commands
+  
+  secret-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Run secret scan
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: ${{ github.event.repository.default_branch }}
+        head: HEAD
