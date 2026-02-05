@@ -5,6 +5,7 @@ import './App.css';
 // Components
 import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
+import EnhancedDashboard from './components/EnhancedDashboard';
 import Activity from './components/Activity';
 import ElizaActivity from './components/ElizaActivity';
 import Banking from './components/Banking';
@@ -29,7 +30,7 @@ function AppContent() {
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
-        return <Dashboard />;
+        return <EnhancedDashboard />;
       case 'activity':
         return <Activity />;
       case 'eliza':
